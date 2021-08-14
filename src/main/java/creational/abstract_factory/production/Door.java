@@ -1,12 +1,17 @@
-package creational.common;
+package creational.abstract_factory.production;
 
 /**
  * 방의 각 측면에 있을 수 있는 문
+ * AbstractProduct
  */
 public class Door extends MapSite {
     private Room room1;
     private Room room2;
     private boolean isOpen;
+
+    public Door() {
+
+    }
 
     // 어느 방 사이에 있는지 알아야됨
     public Door(Room room1, Room room2) {

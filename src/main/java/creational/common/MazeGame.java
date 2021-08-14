@@ -1,5 +1,10 @@
 package creational.common;
 
+import creational.abstract_factory.production.Door;
+import creational.abstract_factory.production.Maze;
+import creational.abstract_factory.production.Room;
+import creational.abstract_factory.production.Wall;
+
 import static creational.common.Direction.*;
 
 public class MazeGame {
@@ -23,5 +28,10 @@ public class MazeGame {
         r2.setSide(WEST, theDoor);
 
         return aMaze;
+    }
+
+    public static void main(String[] args) {
+        MazeGame mazeGame = new MazeGame();
+        mazeGame.createMaze();
     }
 }

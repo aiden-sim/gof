@@ -1,5 +1,6 @@
-package creational.abstract_factory.production;
+package creational.common.production;
 
+import creational.abstract_factory.production.MapSite;
 import creational.common.Direction;
 
 import java.util.HashMap;

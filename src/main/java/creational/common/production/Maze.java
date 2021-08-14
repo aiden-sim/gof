@@ -1,4 +1,4 @@
-package creational.abstract_factory.production;
+package creational.common.production;
 
 import java.util.ArrayList;
 import java.util.List;

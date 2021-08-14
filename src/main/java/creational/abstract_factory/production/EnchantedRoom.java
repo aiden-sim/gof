@@ -1,6 +1,6 @@
 package creational.abstract_factory.production;
 
-import creational.common.Spell;
+import creational.common.production.Room;
 
 /**
  * Product

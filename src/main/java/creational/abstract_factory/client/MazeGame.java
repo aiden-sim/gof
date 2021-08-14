@@ -3,9 +3,9 @@ package creational.abstract_factory.client;
 import creational.abstract_factory.factory.BombedMazeFactory;
 import creational.abstract_factory.factory.EnchantedMazeFactory;
 import creational.abstract_factory.factory.MazeFactory;
-import creational.abstract_factory.production.Door;
-import creational.abstract_factory.production.Maze;
-import creational.abstract_factory.production.Room;
+import creational.common.production.Door;
+import creational.common.production.Maze;
+import creational.common.production.Room;
 
 import static creational.common.Direction.*;
 

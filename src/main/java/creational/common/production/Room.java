@@ -34,4 +34,9 @@ public class Room extends MapSite {
     public void enter() {
 
     }
+
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
 }

@@ -56,6 +56,7 @@ public class MazeGame {
 - 키트(Kit)
 
 ## 동기 (시나리오)
+- 
 
 ## 활용성
 

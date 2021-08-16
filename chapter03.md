@@ -289,7 +289,7 @@ public class MazeGame {
 - https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
 
 
-# 빌더
+# 빌더 / 객체 생성
 - 우리가 롬복으로 사용하고 있는 빌더 패턴은 effective java 에서 소개된 빌더 패턴 이고, gof 디자인 패턴의 빌더 패턴은 다르다.
 
 ## 의도 ('이 디자인 패턴은 무엇을 하는것일까요? 의도와 논리적인 근거가 무엇일까요? 어떤 특정한 문제나 이슈를 해결하기 위한 것일까요?' 에 대한 간결한 답을 제시)

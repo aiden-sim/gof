@@ -64,7 +64,7 @@
 
 
 # 추상 팩토리(Abstract Factory) / 객체 생성
-## 의도
+## 의도 ('이 디자인 패턴은 무엇을 하는것일까요? 의도와 논리적인 근거가 무엇일까요? 어떤 특정한 문제나 이슈를 해결하기 위한 것일까요?' 에 대한 간결한 답을 제시)
 - 상세화된 서브클래스를 정의하지 않고도 서로 관련성이 있거나 독립적인 여러 객체의 군을 생성하기 위한 인터페이스 제공
 
 ## 다른 이름
@@ -89,7 +89,7 @@
   - 관련된 제품 객체들이 함께 사용되도록 설계되었고, 이 부분에 대한 제약이 외부에도 지켜지도록 하고 싶을 때 ex) 위젯 팩토리
   - 제품에 대한 클래스 라이브러리를 제공하고, 그들의 구현이 아닌 인터페이스를 노출시키고 싶을 때
 
-## 구조
+## 구조 (객체 모델링 기법에 기반을 둔 표기법을 이용하여 해당 패턴에서 쓰는 클래스들을 시각적으로 나타냄)
 - ![abstract_factory2](https://user-images.githubusercontent.com/7076334/129567548-a6e1debb-2e79-4d3d-b8f1-417c738dd5ec.png)
   - 실제 Maze 예제에서는 AbstractProduct 을 구체 클래스로 나타낸것 같음 ex) Door, Maze, Room, Wall
 
@@ -97,20 +97,192 @@
 - AbstractFactory(WidgetFactory) : 개념적 제품에 대한 객체를 생성하는 ㅇ녀산으로 인터페이스를 정의
 - ConcreteFactory(MotifWidgetFactory, PMWidgetFactory) : 구체적인 제품에 대한 객체를 생성하는 연산을 구현
 - AbstractProduct(Window, ScrollBar) : 개념적 제품 객체에 대한 인터페이스를 정의
-- ConcreteProduct(MotifWindow, MotifScrollBar) : 구체적으로 팩토리가 생성할 객체를 정의하고, AbstractProduct가 정의하는 
+- ConcreteProduct(MotifWindow, MotifScrollBar) : 구체적으로 팩토리가 생성할 객체를 정의하고, AbstractProduct가 정의하는 인터페이스를 구현
+- Client : AbstractFactory와 AbstractProduct 클래스에 선언된 인터페이스를 사용
 
+## 협력 방법 (참여자들이 작업을 수행하기 위한 참여자들 간의 협력 관계를 정의)
+- ConcreteFactory
+  - 일반적으로 ConcreteFactory 클래스의 인스턴스 한 개가 런타임에 만들어지고 이 구체 팩토리는 어떤 특정 구현을 갖는 제품 객체를 생성함
+  - 서로 다른 제품 객체를 생성하려면 사용자는 서로 다른 구체 팩토리를 사용해야 함
+- AbstractFactory는 필요한 제품 객체를 생성하는 책임을 ConcreteFactory 서브 클래스에 위임함
+  - Client 입장에서는 ConcreteFactory을 알 필요 없음
 
-## 협력 방법
+## 결과 ('이 패턴이 자신의 목표를 어떻게 지원할까요? 이 패턴을 이용한 결과는 무엇인고 장단점은 무엇일까요? 이 패턴을 사용하면 시스템 구조의 어떤 면을 독립적으로 다양화시킬 수 있을까요?')
+- 추상 팩토리 패턴의 이익과 부담
+  - 1) 구체적인 클래스 분리
+    - 팩토리는 제품 객체를 생성하는 과정과 책임을 캡슐화한 것이기 때문에, 구체적인 구현 클래스가 사용자에게서 분리
+    - 일반 프로그램은 추상 인터페이스를 통해서만 인스턴스를 조작
+  - 2) 제품군을 쉽게 대체할 수 있도록 함
+    - 응용프로그램이 사용할 구체 팩토리를 변경하기 쉬움 (선언되는 부분만 변경하면 될듯)
+  - 3) 제품 사이의 일관성을 증진시킴
+    - 하나의 군 안에 속한 제품 객체들이 함께 동작하도록 설계되어 있을 때, 응용프로그램은 한 번에 오직 한 군에서 만든 객체를 사용하도록 함으로써 프로그램의 일관성을 갖도록 해야 함 (모티프를 쓸것인가? PM을 쓸 것인가?)
+      - 추상 팩토리를 쓰면 쉽게 보장 가능 
+  - 4) 새로운 종류의 제품을 제공하기 어려움 
+    - 새로운 종류의 제품이 등장하면 팩토리의 구현을 변경해야 됨
+      - 추상 팩토리와 모든 서브클래스의 변경을 가져옴 (Window, ScroolBar가 아닌 Button이 추가되야한다면?)  
 
-## 결과
+## 구현 ('패턴을 구현할 때 주의해야 할 함정, 힌트, 기법 등은 무엇일까요? 특정 언어에 국한된 특이 사항은 무엇일까요?')
+- 추상 팩토리 패턴 구현 기법
+  - 1) 팩토리를 단일체(singleton)로 정의
+    - 응용프로그램은 한 제품군에 대해서 하나의 ConcreteFactory 인스턴스만 있으면 됨
+  - 2) 제품을 생성함
+    - AbstractFactory 방식은 제품이군이 약간 다르다면 각 제품을 위한 새로운 구체 팩토리 서브클래스가 필요 (공통된 기능 중복 발생)
+    - 많은 제품군이 가능하다면 구체 팩토리는 원형 패턴(Prototype)을 이용해서 구현 가능
+    - 원형 기반의 접근법은 새로운 제품군별로 새로운 구체 팩토리를 생성할 필요를 없애줌
+    - 스몰토크 예제는 이해 못함. 그냥 프로토 타입용 구체 팩토리 하나 만들어 두고, 원형 패턴을(복사) 이용해서 인스턴스 생성 하는 방식으로 이해함 (뒤에 프로토 타입 예제 봐야 할듯)
 
-## 구현
+```
+public class Client
+{
+	public static void main( String[] args )
+	{
+		MazeGame mazeGame = new MazeGame();
+
+		/*
+		 * Using prototype factory with default prototype
+		 */
+		MazeFactory factory = new MazePrototypeFactory( new Maze(), new Wall(), new Room(), new Door() );
+		Maze maze = mazeGame.createMaze( factory );
+		maze.enterTheRoom( 1 );
+
+		/*
+		 * Using prototype factory with bombed wall
+		 */
+		factory = new MazePrototypeFactory( new Maze(), new BombedWall(), new Room(), new Door() );
+		maze = mazeGame.createMaze( factory );
+		maze.enterTheRoom( 1 );
+	}
+}
+```
+  - 3) 확장 가능한 팩토리들을 정의함
+    - AbstractFactory에는 생성할 각 제품의 종류 별로 서로 다른 연산(CreateProductA(), createProductB())을 정의함
+    - 새로운 종류의 제품이 추가되면 AbstractFactory에도 추가되야함 (유연하지 못함)
+      - 유연하게 하려면 생성할 객체를 매개변수로 만들어 연산에 넘기는 형태 (원형 패턴과 이어지는듯)
 
 ## 예제코드
+```
+/**
+ * AbstractFactory
+ */
+public interface MazeFactory {
+    Maze makeMaze();
+
+    Wall makeWall();
+
+    Room makeRoom(int n);
+
+    Door makeDoor(Room r1, Room r2);
+}
+
+/**
+ * ConcreteFactory
+ */
+public class EnchantedMazeFactory implements MazeFactory {
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new Wall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new EnchantedRoom(n, castSpell());
+    }
+
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new DoorNeedingSpell(r1, r2);
+    }
+
+    protected Spell castSpell() {
+        return new Spell();
+    }
+}
+
+/**
+ * ConcreteFactory
+ */
+public class BombedMazeFactory implements MazeFactory {
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new BombedWall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new RoomWithABomb(n);
+    }
+
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new Door(r1, r2);
+    }
+}
+
+
+/**
+ * Client
+ */
+ 
+public Maze createMaze(MazeFactory factory) {
+        Maze maze = factory.makeMaze();
+        Room r1 = factory.makeRoom(1);
+        Room r2 = factory.makeRoom(2);
+        Door door = factory.makeDoor(r1, r2);
+
+        maze.addRoom(r1);
+        maze.addRoom(r2);
+
+        r1.setSide(EAST, door);
+
+        r2.setSide(WEST, door);
+
+        return maze;
+}
+ 
+public class MazeGame {
+    public static void main(String[] args) {
+        MazeGame game = new MazeGame();
+        MazeFactory factory1 = new BombedMazeFactory(); // 폭탄이 설치되어 있는 미로
+        Maze maze1 = game.createMaze(factory1);
+        maze1.getRoomList();
+
+        MazeFactory factory2 = new EnchantedMazeFactory(); // 마법에 걸린 미로
+        Maze maze2 = game.createMaze(factory2);
+        maze2.getRoomList();
+    }
+}
+```
+- MazeFactory 클래스는 미로의 구성요소들을 생성 (방, 벽, 문)
+  - AbstractFactory를 꼭 추상 클래스로 하지 않아도 되나? (유연하게 생각)
+- 맨 처음 예제의 MazeGame의 createMaze는 하드코딩되어 여러 미로를 만들어 내기 힘듬. 그래서 MazeFactory 를 매개변수로 받로록 하여 처리
+  - BombedMazeFactory를 넘기면 폭탄이 들어 있는 미로 생성, EnchantedMazeFactory를 넘기면 마법이 걸린 미로 생성
+- EnchantedMazeFactory(마법의 걸린 미로를 만든 팩토리) 는 Room, Door (Product)에 대해 다른 서브클래스 인스턴스를 반환하게 함
+  - DoorNeedingSpell (단어를 맞추면 문이 열림)
+  - EnchantedRoom (마법 키나 단어 등 특별한 항목을 포함) 
+- BombedMazeFactory (폭탄이 설치되어 있는 미로를 만드는 팩토리)
+  - RoomWithABomb (폭탄이 장착된 방)
+  - BombedWall (폭탄이 터진 후 손상된 벽)
+
 
 ## 잘 알려진 사용예
+- 책에 나와 있는 사용예가 와닿지 않아서 java collectoion 참고
+![abstract_factory_example](https://user-images.githubusercontent.com/7076334/129589517-6cc31868-c0ad-48f2-b9a5-a6c531b28712.png)
+
 
 ## 관련 패턴
+- AbstractFactory 클래스는 팩토리 메서드 패턴을 이용해서 구현되는데, 원형 패턴을 이용할 때도 있음
+- 구체 팩토리는 단일체 패턴을 이용해 구현하는 경우가 많음
 
-
-
+# 기타
+- 모티프) https://ko.wikipedia.org/wiki/%EB%AA%A8%ED%8B%B0%ED%94%84_(%EC%9C%84%EC%A0%AF_%ED%88%B4%ED%82%B7)
+- https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0

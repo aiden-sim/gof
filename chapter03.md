@@ -264,7 +264,7 @@ public class MazeGame {
 }
 ```
 - MazeFactory 클래스는 미로의 구성요소들을 생성 (방, 벽, 문)
-  - AbstractFactory를 꼭 추상 클래스로 하지 않아도 되나? (유연하게 생각)
+  - P.141 AbstractFactory를 꼭 추상 클래스로 하지 않아도 되나? (유연하게 생각)
 - 맨 처음 예제의 MazeGame의 createMaze는 하드코딩되어 여러 미로를 만들어 내기 힘듬. 그래서 MazeFactory 를 매개변수로 받로록 하여 처리
   - BombedMazeFactory를 넘기면 폭탄이 들어 있는 미로 생성, EnchantedMazeFactory를 넘기면 마법이 걸린 미로 생성
 - EnchantedMazeFactory(마법의 걸린 미로를 만든 팩토리) 는 Room, Door (Product)에 대해 다른 서브클래스 인스턴스를 반환하게 함

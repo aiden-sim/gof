@@ -233,7 +233,6 @@ public class BombedMazeFactory implements MazeFactory {
 /**
  * Client
  */
- 
 public Maze createMaze(MazeFactory factory) {
         Maze maze = factory.makeMaze();
         Room r1 = factory.makeRoom(1);
@@ -287,3 +286,262 @@ public class MazeGame {
 # 기타
 - 모티프) https://ko.wikipedia.org/wiki/%EB%AA%A8%ED%8B%B0%ED%94%84_(%EC%9C%84%EC%A0%AF_%ED%88%B4%ED%82%B7)
 - https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
+
+
+# 빌더
+- 우리가 롬복으로 사용하고 있는 빌더 패턴은 effective java 에서 소개된 빌더 패턴 이고, gof 디자인 패턴의 빌더 패턴은 다르다.
+
+## 의도 ('이 디자인 패턴은 무엇을 하는것일까요? 의도와 논리적인 근거가 무엇일까요? 어떤 특정한 문제나 이슈를 해결하기 위한 것일까요?' 에 대한 간결한 답을 제시)
+- 복잡한 객체를 생성하는 방법과 표현하는 방법을 정의하는 클래스를 별도로 분리하여, 서로 다른 표현이라도 이를 생성할 수 있는 동일한 절차를 제공할 수 있도록 함
+
+## 동기 (시나리오)
+- ![builder1](https://user-images.githubusercontent.com/7076334/129593064-fe8f1b1d-20a0-4a34-b8c7-f3942872965c.png)
+- RTF 예제
+  - RTF 문서 판독기는 RTF 포맷에서 다른 텍스트 포맷으로 포맷을 바꿀 수 있어야됨
+  - 가능한 문서 형식들 간의 변환(conversion) 가능성에 제한이 없으며, 판독기의 변경 없이도 새로운 형태의 변환이 추가될 수 있어야 됨
+    - 빌더 패턴은 이런 문제를 푸는데 사용
+    - 빌더 패턴은 문서 포맷을 해석하는 알고리즘(RTF 문서 파싱)을 다른 형태로 어떻게 변환할 것인가 결정하는 알고리즘(converter)과 분리 
+    - 빌더를 쓰면 RTFReader의 파싱 알고리즘은 서로 다른 문서 형식으로 변형하는 용도로 재사용될 수 있음
+
+## 활용성 ('해당 패턴을 어떤 상황에 적용할 수 있을까요? 패턴이 문제로 삼는 잘못된 설계의 예는 무엇일까요? 이 상황을 어떻게 팡가할 수 있을까요?')
+- 어떤 경우에 사용할 수 있을까?
+  - 복합 객체의 생성 알고리즘이 이를 합성하는 요소 객체들이 무엇인지 이들의 조립 방법에 독립적일 때
+    - 복합 객체(Product)의 생성 알고리즘(builder -> Convert)이 이를 합성하는(TextConverter)의 요소 객체들(서브 클래스?)의 조립 방법(구현)에 독립적일 때로 이해함 
+  - 합성할 객체들의 표현이 서로 다르더라도 생성 절차에서 이를 지원해야 할 때
+    - 합성할 객체들의 표현은 구현을 말하는것인가? 생성 절차?(생성 알고리즘?) 
+- 참고)
+  - 복합 객체 : 하나의 객체가 다른 객체를 포함하는 관계 구조
+  - 복합 : 두 가지 이상이 하나로 합침. 또는 두 가지 이상을 하나로 합침
+
+## 구조 (객체 모델링 기법에 기반을 둔 표기법을 이용하여 해당 패턴에서 쓰는 클래스들을 시각적으로 나타냄)
+- ![builder2](https://user-images.githubusercontent.com/7076334/129596854-1a9b50df-1698-4985-90d7-dee7cd9223f2.png)
+
+
+## 참여자 (주어진 패턴을 구성하고 책임을 수행하는 클래스나 객체들을 설명)
+- Builder(TextConverter) : Product 객체의 일부 요소들을 생성하기 위한 추상 인터페이스를 정의
+  - buildPart() 이기 때문에 여러개 생성 가능 
+- ConcreateBuilder(SubConverter 들)
+  - Builder 클래스에 정의된 인터페이스를 구현하며, 제품의 부품들을 모아 빌더를 복합함
+    - Room, Door 등을 모아서 복합
+  - 생성한 요소의 표현을 정의하고 관리
+  - 제품을 검색하는데 필요한 인터페이스(GetASCIIText, GetTextWidget)를 제공
+- Director(RTFReader) : Builder 인터페이스를 사용하는 객체를 합성함
+- Product(ASCIIText, TeXText, TextWidget)
+  - 생성할 복합 객체를 표현
+  - ConcreateBuilder는 제품(product)의 내부 표현을 구축하고 복합 객체가 어떻게 구성되는지에 관한 절차를 정의
+
+## 협력 방법 (참여자들이 작업을 수행하기 위한 참여자들 간의 협력 관계를 정의)
+- 사용자는 Director 객체를 생성하고, 이렇게 생성한 객체를 자신이 원하는 Builder 객체로 합성해 나감
+- 제품의 일부가 구축(built)될 때마다 Director는 Builder에 통보 (build를 호출하는것을 말하는것 같은데)
+- Builder는 Director의 요청을 처리하여 제품에 부품을 추가
+- 사용자는 Buidler에서 제품을 검색
+- P.147 상호작용 다이어그램 참고
+
+
+## 결과 ('이 패턴이 자신의 목표를 어떻게 지원할까요? 이 패턴을 이용한 결과는 무엇인고 장단점은 무엇일까요? 이 패턴을 사용하면 시스템 구조의 어떤 면을 독립적으로 다양화시킬 수 있을까요?')
+- 이익과 부담
+  - 1) 제품에 대한 내부 표현을 다양하게 변화할 수 있음
+    - 빌더를 사용하면 제품이 어떤 요소에서 복합되는지, 그리고 각 요소들의 표현 방법이 무엇인지 가릴 수 있게 됨
+      - 즉, 어떤 요소로 전체 제품을 복합하고 그 요소들이 어떤 타입들로 구현되는지 알고 있는 쪽은 빌더 뿐
+    - 새로운 제품의 표현 방법이나 제품의 복합 방법이 바뀔 때 추상 인터페이스를 정의한 Builder 클래스에서 상속을 통해 새로운 서브클래스르 정의하면 됨
+
+  - 2) 생성과 표현에 필요한 코드를 분리
+    - 빌더 패턴을 사용하면, 복합 객체를 생성하고 복합 객체의 내부 표현 방법을 별도의 모듈로 정의할 수 있음
+    - 사용자는 제품의 내부 구조에 정의된 것을 모른채, 빌더와 상호작용을 통해서 필요한 복합 객체를 생성
+    - ConcreateBuilder는 특정 종류의 제품을 생성하고 조립하는 데 필요한 모든 코드를 포함
+      - Director 객체들이 이것을 재사용해서 똑같은 부품에서 여러가지 Product을 구축할 수 있음 ex) RTF가 아닌 SGML을 이용 
+
+  - 3) 복합 객체를 생성하는 절차를 좀더 세밀하게 나눌 수 있음
+    - 빌더 패턴은 디렉터의 통제 아래 하나씩 내부 구성요소들을 만들어 나감
+    - 디렉터가 빌더에서 만든 전체 복합 객체를 되돌려받을 때까지 제품 복합의 과정은 계속됨
+    
+    
+## 구현 ('패턴을 구현할 때 주의해야 할 함정, 힌트, 기법 등은 무엇일까요? 특정 언어에 국한된 특이 사항은 무엇일까요?')
+- 구현에 대한 이슈 정리
+  - 1) 조합과 구축에 필요한 인터페이스를 정의
+    - 설계할 때 중요하게 생각해야 하는 것은 생성과 조합을 위한 모델 구축
+    - 트리 구조는 단순하게 요소를 추가 하는 방법이 아닌, 자식 노드들을 모아서 부모 노드를 만드는 상향식으로 복합됨
+  - 2) 제품(Product)에 대한 추상 클래스는 필요 없는가?
+    - 추상 팩토리 같은 경우 AbstractProduct의 형태를 가져갔지만 빌더는 필요 없음
+    - Builder의 서브클래스에서 제품이 생성될 때, 제품마다 그 제품을 표현하는 방법이 다르고 어떠한 공통점도 찾을 수 없기 때문에
+      - ex) ASCIIText, TextWidget 은 공통점이 없음 
+  - 3) Builder에 있는 메서드에 대해서는 구현을 제공하지 않는게 일반적
+    - 서브클래스에서 모든 가상 함수가 아니고 필요한 메서드만 재정의하기 위해서
+
+## 예제코드
+```
+/**
+ * Builder
+ */
+public abstract class MazeBuilder {
+    public abstract void buildMaze();
+
+    public abstract void buildRoom(int room);
+
+    public abstract void buildDoor(int roomFrom, int roomTo);
+
+    public abstract Maze getMaze(); // getResult
+}
+
+
+/**
+ * ConcreteBuilder
+ */
+public class StandardMazeBuilder extends MazeBuilder {
+    private Maze currentMaze;
+
+
+    @Override
+    public void buildMaze() {
+        currentMaze = new Maze();
+    }
+
+    @Override
+    public void buildRoom(int n) {
+        if (currentMaze.roomList.get(n) == null) {
+            Room room = new Room(n);
+            room.setSide(NORTH, new Wall()); // 복합
+            room.setSide(EAST, new Wall());
+            room.setSide(SOUTH, new Wall());
+            room.setSide(WEST, new Wall());
+
+            currentMaze.addRoom(room);
+        }
+    }
+
+    @Override
+    public void buildDoor(int roomFrom, int roomTo) {
+        Room r1 = currentMaze.roomList.get(roomFrom);
+        Room r2 = currentMaze.roomList.get(roomTo);
+        Door d = new Door(r1, r2);
+
+        r1.setSide(commonWall(r1, r2), d); // 복합
+        r2.setSide(commonWall(r2, r1), d); // 복합
+    }
+
+    @Override
+    public Maze getMaze() {
+        return currentMaze;
+    }
+    
+    private Direction commonWall(Room r1, Room r2) {
+	
+    }
+}
+
+
+/**
+ * ConcreteBuilder (생성된 서로 다른 종류의 구성요소 수를 반환)
+ */
+public class CountingMazeBuilder extends MazeBuilder {
+    private int doors;
+    private int rooms;
+
+    public CountingMazeBuilder() {
+        doors = 0;
+        rooms = 0;
+    }
+
+    @Override
+    public void buildMaze() {
+
+    }
+
+    @Override
+    public void buildRoom(int room) {
+        room++;
+    }
+
+    @Override
+    public void buildDoor(int roomFrom, int roomTo) {
+        doors++;
+    }
+
+    @Override
+    public Maze getMaze() {
+        return null;
+    }
+
+    public int getRooms() {
+        return rooms;
+    }
+
+    public int getDoors() {
+        return doors;
+    }
+}
+
+/**
+ * Director
+ */
+public class MazeGame {
+
+    public Maze createMaze(MazeBuilder builder) {
+        builder.buildMaze();
+        builder.buildRoom(1);
+        builder.buildRoom(2);
+        builder.buildDoor(1, 2);
+        return builder.getMaze();
+    }
+
+    /**
+     * 복잡한 방의 미로
+     */
+    public Maze createComplexMaze(MazeBuilder builder) {
+        builder.buildRoom(1);
+        builder.buildRoom(1001);
+        return builder.getMaze();
+    }
+
+    public static void main(String[] args) {
+        StandardMazeBuilder builder1 = new StandardMazeBuilder();
+        MazeGame game1 = new MazeGame();
+
+        game1.createMaze(builder1);
+        builder1.getMaze();
+
+
+        CountingMazeBuilder builder2 = new CountingMazeBuilder();
+        MazeGame game2 = new MazeGame();
+
+        game2.createMaze(builder2);
+        System.out.println(
+                "the Maze has room count : " + builder2.getRooms() + " , doors count : " + builder2.getDoors());
+
+    }
+}
+
+```
+- MazeBuilder(Builder) 클래스를 통해 미로를 복합하는데 필요한 인터페이스를 정의
+  - 정의된 연산들을 통해서 미로와 방 번호를 갖는 방과 방들 사이의 문을 생성할 수 있음
+  - getMaze() 연산을 통해 완성된 복합 객체 미로를 얻을 수 있음
+  - 주된 목적은 미로 자체를 만들지 않고, 단지 미로를 생성하는 인터페이스를 정의하는 것
+  - 순수한 가상 함수로 정의하지 않는 부분에 대해서는 이게 맞는건지 모르겠음.. (옛날 방식이라 그런것 같기도 하고 DIP 위반 아닌가?)
+- MazeGame(Director)의 createMaze() 에서 MazeBuilder 인스턴스를 매개변수도 받도록 처리
+  - 처음에 나온 하드코딩 createMaze() 과 비교해 보면 빌더 객체가 미로의 내부 표현(방, 문, 벽 정의 클래스)를 어떻게 은닉하는지 알 수 있음
+- StandardMazeBuilder(ConcreteBuilder)
+  - currnectMaze 변수에 자신이 구축한 미로에 대한 매개변수를 관리
+  - buildMaze로 maze를 생성 후, getMaze()로 결과를 사용자에게 돌려줌
+  - buildRoom은 방을 생성하고 방 주위의 벽을 만드는 연산
+  - buildDoor()는 미로에 속한 방 두개를 찾아서 그들 사이에 연결된 부분에 문을 만듬
+  - 빌더 패턴을 이용하면 Maze 클래스는 작은 규모의 클래스(불필요한 연산 제거)가 되므로 이해,수정하기 쉬워짐
+    - 두 클래스를 분리하여 MazeBuilder를 여러 가지로 다양화 할 수 있음 
+- CountingMazeBuilder(ConcreteBuilder)
+  - 생성된 서로 다른 종류의 구성요소 수를 반환
+
+## 잘 알려진 사용예
+- RTF 변환기 응용프로그램
+
+## 관련 패턴
+- 추상팩토리 vs 빌더
+  - 빌더 패턴은 복잡한 객체의 단계별 생성에 중점을 둠
+  - 추상 팩토리 패턴은 제품의 **유사군** 들이 존재할 때 유연산 설계에 중점을 둠 
+  - 빌더 패턴은 생성의 마지막 단계에서 생성한 제품을 반환 함
+  - 추상 팩토리 패턴은 만드는 즉시 제품을 반환 함
+    - (중요) 추상 팩토리 패턴에서 만드는 제품은 꼭 모여야만 의미 있는 것이 아니라 하나만으로도 의미가 있기 때문 (Product) 
+
+# 기타
+- 모티프) https://ko.wikipedia.org/wiki/%EB%AA%A8%ED%8B%B0%ED%94%84_(%EC%9C%84%EC%A0%AF_%ED%88%B4%ED%82%B7)
+- 추상 팩토리 패턴) https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
+- 복합객체) https://yeah.tistory.com/16 
+- 빌더 패턴) https://johngrib.github.io/wiki/builder-pattern/

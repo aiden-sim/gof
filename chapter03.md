@@ -12,9 +12,16 @@
   - 생성 패턴들은 서로 보완적일 수도 있고 선택되기 위해 서로 경쟁적일 수도 있음 (선택의 결정을 내리기 어려움)
   - 미로와 게임을 예시로 각 생성 패턴들의 차이를 확인
 
-  - ![image1](https://user-images.githubusercontent.com/7076334/129391632-b2dec1fd-bde8-439b-92e0-9937b6aeb578.png)
-```
-public class MazeGame {
+  - 미로 클래스 다이어그램
+    - ![image1](https://user-images.githubusercontent.com/7076334/129391632-b2dec1fd-bde8-439b-92e0-9937b6aeb578.png)
+      - MapSite 클래스는 미로의 구성요소들에 필요한 모든 연산을 정의한 공통 추상 클래스
+      - Room 클래스는 미로에 있는 다른 요소와(벽,문 등) 관련성을 갖도록 정의
+      - Wall과 Door는 방의 각 측면에 있을 수 있는 문과 벽을 나타냄
+      - Maze는 방들의 집합을 표현 (RoomNo() 연산을 통해 특정 방을 찾을 수 있음)
+      - MazeGame는 실제로 미로를 생성하는 클래스 (다이어그램에는 없음)
+
+- 간단한 미로 생성 (겨우 방 두개를 만들었을 뿐인데 약간 복잡함)
+    ```
     public Maze createMaze() {
         Maze aMaze = new Maze();
         Room r1 = new Room(1);
@@ -24,16 +31,24 @@ public class MazeGame {
         aMaze.addRoom(r1);
         aMaze.addRoom(r2);
 
+        r1.setSide(NORTH, new Wall());
         r1.setSide(EAST, theDoor);
+        r1.setSide(SOUTH, new Wall());
+        r1.setSide(WEST, new Wall());
+
+        r2.setSide(NORTH, new Wall());
+        r2.setSide(EAST, new Wall());
+        r2.setSide(SOUTH, new Wall());
         r2.setSide(WEST, theDoor);
 
         return aMaze;
     }
-}
-```
+    ```
 
   - createMaze 단점은 유연성이 떨어짐
     - 방의 레이아웃이 하드코딩 되어 있음 (가장 큰 장애요인)
+    - 레이아웃을 변경하려면 멤버 함수를 바꾸는 수 밖에 없음
+      - 생성 패턴은 이런 상호아에서 어떻게 유연한 설계를 할 수 있는지에 대한 해법을 제공 
 
 - 생성 패턴을 이용하면?
   - 팩토리 메서드 패턴
@@ -56,13 +71,34 @@ public class MazeGame {
 - 키트(Kit)
 
 ## 동기 (시나리오)
-- 
+- 사례
+  - 룩앤필 : 소프트웨어 디자인에서 룩 앤필은 그래픽 사용자 인터페이스의 관점에서 쓰이며 색, 모양, 레이아웃, 글꼴 뿐 아니라 단추, 상자, 메뉴와 같은 동적의 요소의 동작을 수반하는 디자인의 측면을 이루고 있음
+  - 개발한 응용프로그램이 서로 다른 룩앤필 표준에 상관없이 이식성을 가지려면, 응용프로그램이 각 사용자 인터페이스 툴킷에서 제공하는 위젯을 직접 사용하지 못하도록 해야 함
 
-## 활용성
+- ![abstract_factory1](https://user-images.githubusercontent.com/7076334/129565276-f1dbf82e-82ae-44b0-b30b-948ae1e5d78a.png)
+  - WidgetFactory 인터페이스는 각 추상화된 위젯 클래스 (Product) 의 인스턴스를 생성하여 반환하는 연산을 정의
+  - 응용프로그램 (Client)는 필요한 사용자 인터페이스 요소를 WidgetFactory에 생성해 줄 것을 요청하여, 필요한 요소의 인스턴스를 얻어옴
+  - 실제적으로 구현 종속적인 인스턴스를 생성하기 위해서는 팩토리와 구분하여 각각의 위젯별(Product)로 추상화된 클래스를 정의해야 하고, 이를 상속하는 구체적인 서브클래스를 정의하여 룩앤필 표준에 대한 구현을 제공
+    - 사용자는 WidgetFactory를 상속받은 어떤 구체적 서브클래스가 이들 연산을 구현하여 결과를 반환하는지 알 수 없고, 알 필요도 없음
+    - 사용자는 룩앤필과 분리될 수 있음 (위젯을 직접 사용하지 못함)
+
+## 활용성 ('해당 패턴을 어떤 상황에 적용할 수 있을까요? 패턴이 문제로 삼는 잘못된 설계의 예는 무엇일까요? 이 상황을 어떻게 팡가할 수 있을까요?')
+- 추상 팩토리 사용 예
+  - 객체가 생성되거나 구성, 표현되는 방식과 무관하게 시스템을 독립적으로 만들고자 할 때
+  - 여러 제품군 중 하나를 선택해서 시스템을 설정해야 하고 한번 구성한 제품을 다른 것으로 대체할 수 있을 때
+  - 관련된 제품 객체들이 함께 사용되도록 설계되었고, 이 부분에 대한 제약이 외부에도 지켜지도록 하고 싶을 때 ex) 위젯 팩토리
+  - 제품에 대한 클래스 라이브러리를 제공하고, 그들의 구현이 아닌 인터페이스를 노출시키고 싶을 때
 
 ## 구조
+- ![abstract_factory2](https://user-images.githubusercontent.com/7076334/129567548-a6e1debb-2e79-4d3d-b8f1-417c738dd5ec.png)
+  - 실제 Maze 예제에서는 AbstractProduct 을 구체 클래스로 나타낸것 같음 ex) Door, Maze, Room, Wall
 
-## 참여자
+## 참여자 (주어진 패턴을 구성하고 책임을 수행하는 클래스나 객체들을 설명)
+- AbstractFactory(WidgetFactory) : 개념적 제품에 대한 객체를 생성하는 ㅇ녀산으로 인터페이스를 정의
+- ConcreteFactory(MotifWidgetFactory, PMWidgetFactory) : 구체적인 제품에 대한 객체를 생성하는 연산을 구현
+- AbstractProduct(Window, ScrollBar) : 개념적 제품 객체에 대한 인터페이스를 정의
+- ConcreteProduct(MotifWindow, MotifScrollBar) : 구체적으로 팩토리가 생성할 객체를 정의하고, AbstractProduct가 정의하는 
+
 
 ## 협력 방법
 

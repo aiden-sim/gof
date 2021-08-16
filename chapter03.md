@@ -275,7 +275,7 @@ public class MazeGame {
 
 
 ## 잘 알려진 사용예
-- 책에 나와 있는 사용예가 와닿지 않아서 java collectoion 참고
+- 책에 나와 있는 사용예가 와닿지 않아서 java collection 참고
 ![abstract_factory_example](https://user-images.githubusercontent.com/7076334/129589517-6cc31868-c0ad-48f2-b9a5-a6c531b28712.png)
 
 

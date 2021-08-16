@@ -1,6 +1,6 @@
-package creational.common.production;
+package creational.common.product;
 
-import creational.abstract_factory.production.MapSite;
+import creational.abstract_factory.product.MapSite;
 
 /**
  * 방의 각 측면에 있을 수 있는 벽

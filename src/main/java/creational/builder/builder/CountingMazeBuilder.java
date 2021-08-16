@@ -1,7 +1,10 @@
 package creational.builder.builder;
 
-import creational.common.production.Maze;
+import creational.common.product.Maze;
 
+/**
+ * ConcreteBuilder
+ */
 public class CountingMazeBuilder extends MazeBuilder {
     private int doors;
     private int rooms;

@@ -3,8 +3,11 @@ package creational.builder.director;
 import creational.builder.builder.CountingMazeBuilder;
 import creational.builder.builder.MazeBuilder;
 import creational.builder.builder.StandardMazeBuilder;
-import creational.common.production.Maze;
+import creational.common.product.Maze;
 
+/**
+ * Director
+ */
 public class MazeGame {
 
     public Maze createMaze(MazeBuilder builder) {

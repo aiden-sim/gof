@@ -1,11 +1,11 @@
 package creational.factory_method.creator;
 
-import creational.abstract_factory.production.BombedWall;
-import creational.abstract_factory.production.RoomWithABomb;
-import creational.common.production.Door;
-import creational.common.production.Maze;
-import creational.common.production.Room;
-import creational.common.production.Wall;
+import creational.abstract_factory.product.BombedWall;
+import creational.abstract_factory.product.RoomWithABomb;
+import creational.common.product.Door;
+import creational.common.product.Maze;
+import creational.common.product.Room;
+import creational.common.product.Wall;
 
 public class BombedMazeGame extends MazeGame {
 

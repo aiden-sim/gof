@@ -1,4 +1,4 @@
-package creational.common.production;
+package creational.common.product;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
 package creational.abstract_factory.factory;
 
-import creational.common.production.Door;
-import creational.common.production.Maze;
-import creational.common.production.Room;
-import creational.common.production.Wall;
+import creational.common.product.Door;
+import creational.common.product.Maze;
+import creational.common.product.Room;
+import creational.common.product.Wall;
 
 /**
  * AbstractFactory

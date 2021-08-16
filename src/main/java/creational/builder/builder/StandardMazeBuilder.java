@@ -1,13 +1,16 @@
 package creational.builder.builder;
 
 import creational.common.Direction;
-import creational.common.production.Door;
-import creational.common.production.Maze;
-import creational.common.production.Room;
-import creational.common.production.Wall;
+import creational.common.product.Door;
+import creational.common.product.Maze;
+import creational.common.product.Room;
+import creational.common.product.Wall;
 
 import static creational.common.Direction.*;
 
+/**
+ * ConcreteBuilder
+ */
 public class StandardMazeBuilder extends MazeBuilder {
     private Maze currentMaze;
 
@@ -21,7 +24,7 @@ public class StandardMazeBuilder extends MazeBuilder {
     public void buildRoom(int n) {
         if (currentMaze.roomList.get(n) == null) {
             Room room = new Room(n);
-            room.setSide(NORTH, new Wall());
+            room.setSide(NORTH, new Wall()); // 복합
             room.setSide(EAST, new Wall());
             room.setSide(SOUTH, new Wall());
             room.setSide(WEST, new Wall());
@@ -36,8 +39,8 @@ public class StandardMazeBuilder extends MazeBuilder {
         Room r2 = currentMaze.roomList.get(roomTo);
         Door d = new Door(r1, r2);
 
-        r1.setSide(commonWall(r1, r2), d);
-        r2.setSide(commonWall(r2, r1), d);
+        r1.setSide(commonWall(r1, r2), d); // 복합
+        r2.setSide(commonWall(r2, r1), d); // 복합
     }
 
     @Override

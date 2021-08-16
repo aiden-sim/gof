@@ -1,4 +1,4 @@
-package creational.factory_method.product;
+package creational.abstract_factory.product;
 
 import creational.common.product.Door;
 import creational.common.product.Room;

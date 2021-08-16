@@ -1,6 +1,6 @@
-package creational.abstract_factory.production;
+package creational.abstract_factory.product;
 
-import creational.common.production.Room;
+import creational.common.product.Room;
 
 /**
  * Product

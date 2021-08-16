@@ -1,6 +1,6 @@
 package creational.factory_method.product;
 
-import creational.common.production.Room;
+import creational.common.product.Room;
 
 /**
  * Product

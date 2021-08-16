@@ -1,6 +1,6 @@
 package creational.builder.builder;
 
-import creational.common.production.Maze;
+import creational.common.product.Maze;
 
 /**
  * Builder

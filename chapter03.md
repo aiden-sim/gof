@@ -628,12 +628,118 @@ public class MazeGame {
     - 팩토리 메서드를 쓴다는 사실을 명확하게 만들어 주는 명명 규칙을 따르는 좋은 습관을 들이도록 해야됨 (나는 개인적으로 Postfix에 Factory 사용)
 
 ## 예제코드
+```
 
+/**
+ * ConcreteCreator
+ */
+public class BombedMazeGame extends MazeGame {
+
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new BombedWall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new RoomWithABomb(n);
+    }
+
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new Door(r1, r2);
+    }
+}
+
+/**
+ * ConcreteCreator
+ */
+public class EnchantedMazeGame extends MazeGame {
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new Wall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new EnchantedRoom(n, castSpell());
+    }
+    
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new DoorNeedingSpell(r1, r2);
+    }
+
+    protected Spell castSpell() {
+        return new Spell();
+    }
+}
+
+/**
+ * Creator
+ */
+public abstract class MazeGame {
+
+    /**
+     * Factory Method
+     */
+    public abstract Maze makeMaze();
+
+    public abstract Room makeRoom(int n);
+
+    public abstract Wall makeWall();
+
+    public abstract Door makeDoor(Room r1, Room r2);
+
+    public Maze createMaze() {
+        Maze maze = makeMaze();
+        Room r1 = makeRoom(1);             // 팩토리 메서드 사용
+        Room r2 = makeRoom(2);             // 팩토리 메서드 사용
+        Door theDoor = makeDoor(r1, r2);   // 팩토리 메서드 사용
+
+        r1.setSide(NORTH, makeWall());
+        r1.setSide(EAST, theDoor);
+        r1.setSide(SOUTH, makeWall());
+        r1.setSide(WEST, makeWall());
+
+        r2.setSide(NORTH, makeWall());
+        r2.setSide(EAST, makeWall());
+        r2.setSide(SOUTH, makeWall());
+        r2.setSide(WEST, theDoor);
+
+        maze.addRoom(r1);
+        maze.addRoom(r2);
+        return maze;
+    }
+
+    public static void main(String[] args) {
+
+    }
+}
+
+```
+- MazeGame 안에서 미로, 방, 벽, 문 객체를 생성하기 위해 팩토리 메서드 정의 (makeMaze, makeRoom, makeWall, makeDoor)
+  - 팩토리 메서드를 사용하여 createMaze를 다시 작성
+- BombedMazeGame 클래스는 Room과 Wall 객체를 다시 정의하여 폭탄을 맞은 것들을 반환
+- EnchantedMazeGame 클래스는 Room과 Door 객체를 다시 정의하여 마법에 걸린 미로 정의
 
 ## 잘 알려진 사용예
-
+- 팩토리 메서드는 툴킷과 프레임워크 구현에서 많이 볼 수 있음
 
 ## 관련 패턴
+- 추상 팩토리 패턴은 이 팩토리 메서드를 이용해서 구현할 때가 많음
+- 팩토리 메서드는 템플릿 메서드 패턴에서도 사용될 때가 많음 (앞에 createMaze 쪽도?)
+- 원형 패턴은 Creator 클래스의 상속이 필요하지 않음 그러나 Product 클래스에 정의된 초기화 연산은 필요함
 
 
 # 기타

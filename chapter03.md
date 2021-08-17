@@ -636,3 +636,4 @@ public class MazeGame {
 - 복합객체) https://yeah.tistory.com/16 
 - 빌더 패턴) https://johngrib.github.io/wiki/builder-pattern/
 - 팩토리 메서드 패턴) https://johngrib.github.io/wiki/factory-method-pattern/#fn:gof
+- 팩토리 메서드 패턴2) https://niceman.tistory.com/143

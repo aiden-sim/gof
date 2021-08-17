@@ -94,7 +94,7 @@
   - 실제 Maze 예제에서는 AbstractProduct 을 구체 클래스로 나타낸것 같음 ex) Door, Maze, Room, Wall
 
 ## 참여자 (주어진 패턴을 구성하고 책임을 수행하는 클래스나 객체들을 설명)
-- AbstractFactory(WidgetFactory) : 개념적 제품에 대한 객체를 생성하는 ㅇ녀산으로 인터페이스를 정의
+- AbstractFactory(WidgetFactory) : 개념적 제품에 대한 객체를 생성하는 연산으로 인터페이스를 정의
 - ConcreteFactory(MotifWidgetFactory, PMWidgetFactory) : 구체적인 제품에 대한 객체를 생성하는 연산을 구현
 - AbstractProduct(Window, ScrollBar) : 개념적 제품 객체에 대한 인터페이스를 정의
 - ConcreteProduct(MotifWindow, MotifScrollBar) : 구체적으로 팩토리가 생성할 객체를 정의하고, AbstractProduct가 정의하는 인터페이스를 구현

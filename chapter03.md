@@ -284,12 +284,7 @@ public class MazeGame {
 - AbstractFactory 클래스는 팩토리 메서드 패턴을 이용해서 구현되는데, 원형 패턴을 이용할 때도 있음
 - 구체 팩토리는 단일체 패턴을 이용해 구현하는 경우가 많음
 
-# 기타
-- 모티프) https://ko.wikipedia.org/wiki/%EB%AA%A8%ED%8B%B0%ED%94%84_(%EC%9C%84%EC%A0%AF_%ED%88%B4%ED%82%B7)
-- https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
-
-
-# 빌더
+# 빌더 / 객체 생성
 - 우리가 롬복으로 사용하고 있는 빌더 패턴은 effective java 에서 소개된 빌더 패턴 이고, gof 디자인 패턴의 빌더 패턴은 다르다.
 
 ## 의도 ('이 디자인 패턴은 무엇을 하는것일까요? 의도와 논리적인 근거가 무엇일까요? 어떤 특정한 문제나 이슈를 해결하기 위한 것일까요?' 에 대한 간결한 답을 제시)
@@ -541,8 +536,216 @@ public class MazeGame {
   - 추상 팩토리 패턴은 만드는 즉시 제품을 반환 함
     - (중요) 추상 팩토리 패턴에서 만드는 제품은 꼭 모여야만 의미 있는 것이 아니라 하나만으로도 의미가 있기 때문 (Product) 
 
+# 팩토리 메서드 / 클래스 생성
+
+## 의도 ('이 디자인 패턴은 무엇을 하는것일까요? 의도와 논리적인 근거가 무엇일까요? 어떤 특정한 문제나 이슈를 해결하기 위한 것일까요?' 에 대한 간결한 답을 제시)
+- 객체를 생성하기 위해 인터페이스를 정의하지만, 어떤 클래스의 인터페이스를 생성할지에 대한 결정은 서브클래스가 내리도록 함
+
+## 다른 이름
+- 가상 생성자(Vritual Constructor)
+
+## 동기 (시나리오)
+- ![factorymethod1](https://user-images.githubusercontent.com/7076334/129644099-4af75bc5-f208-4001-a85f-daf24a631a9e.png)
+- 다양한 종류의 문서를 표현할 수 있는 응용프레임워크 예제
+  - 두 개의 큰 추상클래스를 선언 (Application, Document)
+  - Application 클래스는 Document 객체를 관리하는 책임을 맡고 있으며, 문서들을 생성하기도 함
+  - Application 클래스는 언제 문서의 인스턴스를 만들어야 하는지만 알고 있을 뿐, 어떤 종류의 문서를 생성해야 하는지 알지 못함
+    - 문제봉착! 추상 클래스 밖에 모르는 프레임워크는 클래스의 인스턴스화 작업을 수행못함
+    - 팩토리 메서드 패턴은 이런 문제에 대한 해법 제시! 
+    - 팩토리 메서드 패턴은 Document의 서브클래스 중 어느 것을 생성해야 하는지에 대한 정보를 캡슐화하고, 그것을 프레임워크에서 떼어냄
+  - Application 클래스의 서브 클래스는 추상화된 createDocument() 연산을 재정의하여 적당한 Docuemnt 클래스의 서브 클래스를 반환함
+    - createDocument() 연산을 가리켜 **팩토리 메서드** 라고 하는데, 객체를 '제조하는' 방법을 알기 때문
+
+
+## 활용성 ('해당 패턴을 어떤 상황에 적용할 수 있을까요? 패턴이 문제로 삼는 잘못된 설계의 예는 무엇일까요? 이 상황을 어떻게 팡가할 수 있을까요?')
+- 해당 패턴을 어떤 상황에 적용할 수 있을까?
+  - 어떤 클래스가 자신이 생성해야 하는 객체의 클래스를 예측할 수 없을 때
+  - 생성할 객체를 기술하는 책임을 자신의 서브클래스가 지정했으면 할 때
+  - 객체 생성의 책임을 몇 개의 보조 서브클래스 가운데 하나에게 위임하고, 어떤 서브클래스가 위임자인지에 대한 정보를 국소화시키고 싶을 때
+
+## 구조 (객체 모델링 기법에 기반을 둔 표기법을 이용하여 해당 패턴에서 쓰는 클래스들을 시각적으로 나타냄)
+- ![factorymethod2](https://user-images.githubusercontent.com/7076334/129645710-2fe8553e-ecb0-4ed2-8f7e-42cf642d6e0d.png)
+
+## 참여자 (주어진 패턴을 구성하고 책임을 수행하는 클래스나 객체들을 설명)
+- Product(Document) : 팩토리 메서드가 생성하는 객체의 인터페이스를 정의
+- ConcreteProduct(MyDocument) : Product 클래스에 정으된 인터페이스를 실제로 구현
+- Creator(Application)
+  - Product 타입의 객체를 반환하는 팩토리 메서드를 선언
+  - Creator 클래스는 팩토리 메서드를 기본적으로 구현하는데, 이 구현에서 ConcreateProduct 객체를 반환 (Product 객체의 생성을 위해 팩토리 메서드를 호출)
+
+## 협력 방법 (참여자들이 작업을 수행하기 위한 참여자들 간의 협력 관계를 정의)
+- Creator는 자신의 서브클래스를 통해 실제 필요한 팩토리 메서드를 정의하여 적절한 ConcreteProduct의 인스턴스를 반환할 수 있게 함
+
+## 결과 ('이 패턴이 자신의 목표를 어떻게 지원할까요? 이 패턴을 이용한 결과는 무엇인고 장단점은 무엇일까요? 이 패턴을 사용하면 시스템 구조의 어떤 면을 독립적으로 다양화시킬 수 있을까요?')
+- 팩토리 메서드의 잠재적 단점은 사용자가 ConcreateProduct 객체 하나만 만들려할 때에도 Creator 클래스를 서브클래싱 해야 할지 모른다는 점
+
+- 팩토리 메서드 패턴의 사용 결과
+  - 1) 서브클래스에 대한 훅(hook) 메서드를 제공
+    - 팩토리 메서드로 클래스 내부에서 객체를 생성하는 것이 객체를 직접 생성하는 것보다 훨씬 응용성이 높아짐
+    - 팩토리 메서드는 추상 연산이 아니며, 적절한 기본 구현을 제공
+    - 훅 메서드?
+      - 상속 받는 클래스에서 선택적으로 오버라이드 할 수 있는 메서드 (abstract 키워드 안붙임)
+  - 2) 병렬적인 클래스 계통을 연결하는 역할을 담당
+    - P 160 예제
+      - 팩토리 메서드는 병렬적인 클래스 계통이 만들어질 때 더욱 쓸모가 있음
+      - 병렬적 클래스 계통은 클래스가 자신의 책임을 분리된 다른 클래스에 위임할 때 발생
+      - 사용자와 대화식으로 처리되는 그래픽 객체를 구현시?
+        - 상태는 조작 과정 중에서만 필요한 정보이고, 그림 객체 자체에 저장될 필요가 없음
+        - 특정한 조작에 관련된 상태를 추적, 저장하는 별도의 Manipulator 객체를 사용 
+        - Document 클래스를 상속하는 서브 클래스들이 늘어날 때마다, Manipulator의 서브클래스들도 늘어남
+
+
+## 구현 ('패턴을 구현할 때 주의해야 할 함정, 힌트, 기법 등은 무엇일까요? 특정 언어에 국한된 특이 사항은 무엇일까요?')
+- 구현시 다음 사항을 고려
+  - 1) 구현 방법이 크게 두 가지
+    - Creator 클래스를 추상 클래스로 정의하고, 정의한 팩토리 메서드에 대한 구현은 제공하지 않는 경우
+      - 구현을 제공한 서브클래스를 반드시 정의 
+    - Creator가 구체 클래스이고, 팩토리 메서드에 대한 기본 구현을 제공하는 경우
+  - 2) 팩토리 메서드를 매개변수화 함
+    ```
+    Product create(ProductId id) {
+        if(id == MINE) return new YourProduct; // 두개 변경
+        if(id == YOURS) return new MyProduct;
+	
+	if(id == THEIRS) return new TheirProduct; // 추가
+	
+	return super.Create(id); // 부모 호출
+    }
+    ```
+    - 생성할 문서 객체의 종류를 매개변수로 넘김
+    - 매개변수화된 팩토리 메서드를 오버라이드하면, Creator 클래스가 생성하는 제품을 쉽게 확장하거나 변경할 수 있음
+    - 마지막에 부모 클래스에 정의된 Create 호출하는데, 선언된 이외의 것을 처리하기 위해
+  - 3) 언어마다 구현 방법이 조금 다를 수 있음
+    - 스몰토크 버전으로 설명
+    - Application의 클래스 변수로 생성할 클래스를 저장해서 굳이 서브클래스 형태를 안가지고 가는듯
+    - 스몰토크에서는 creator 클래스의 생성자 내에서 팩토리 메서드를 호출하지 않도록 주의 (인스턴스 생성 전)
+      - 지연 초기화로 해결
+  - 4) 템플릿을 사용하여 서브클래싱을 피함 
+    - 잠재적 문제점 중 하나는 Product 클래스 하나를 추가하려 할 때마다 서브클래싱(ConcreteCreator)을 해야 함 (부피가 확장)
+    - c++ 에서는 템플릿 클래스를 이용하여 해결 (자바는 제네릭 메서드를 나타내는 듯)
+      - Creator를 상속받는 서브클래스를 정의할 필요 없이, 적절한 Product 클래스만 준비하면 됨 
+  - 5) 명명 규칙을 따르는 것도 매우 중요한 일
+    - 팩토리 메서드를 쓴다는 사실을 명확하게 만들어 주는 명명 규칙을 따르는 좋은 습관을 들이도록 해야됨 (나는 개인적으로 Postfix에 Factory 사용)
+
+## 예제코드
+```
+
+/**
+ * ConcreteCreator
+ */
+public class BombedMazeGame extends MazeGame {
+
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new BombedWall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new RoomWithABomb(n);
+    }
+
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new Door(r1, r2);
+    }
+}
+
+/**
+ * ConcreteCreator
+ */
+public class EnchantedMazeGame extends MazeGame {
+    @Override
+    public Maze makeMaze() {
+        return new Maze();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return new Wall();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return new EnchantedRoom(n, castSpell());
+    }
+    
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        return new DoorNeedingSpell(r1, r2);
+    }
+
+    protected Spell castSpell() {
+        return new Spell();
+    }
+}
+
+/**
+ * Creator
+ */
+public abstract class MazeGame {
+
+    /**
+     * Factory Method
+     */
+    public abstract Maze makeMaze();
+
+    public abstract Room makeRoom(int n);
+
+    public abstract Wall makeWall();
+
+    public abstract Door makeDoor(Room r1, Room r2);
+
+    public Maze createMaze() {
+        Maze maze = makeMaze();
+        Room r1 = makeRoom(1);             // 팩토리 메서드 사용
+        Room r2 = makeRoom(2);             // 팩토리 메서드 사용
+        Door theDoor = makeDoor(r1, r2);   // 팩토리 메서드 사용
+
+        r1.setSide(NORTH, makeWall());
+        r1.setSide(EAST, theDoor);
+        r1.setSide(SOUTH, makeWall());
+        r1.setSide(WEST, makeWall());
+
+        r2.setSide(NORTH, makeWall());
+        r2.setSide(EAST, makeWall());
+        r2.setSide(SOUTH, makeWall());
+        r2.setSide(WEST, theDoor);
+
+        maze.addRoom(r1);
+        maze.addRoom(r2);
+        return maze;
+    }
+
+    public static void main(String[] args) {
+
+    }
+}
+
+```
+- MazeGame 안에서 미로, 방, 벽, 문 객체를 생성하기 위해 팩토리 메서드 정의 (makeMaze, makeRoom, makeWall, makeDoor)
+  - 팩토리 메서드를 사용하여 createMaze를 다시 작성
+- BombedMazeGame 클래스는 Room과 Wall 객체를 다시 정의하여 폭탄을 맞은 것들을 반환
+- EnchantedMazeGame 클래스는 Room과 Door 객체를 다시 정의하여 마법에 걸린 미로 정의
+
+## 잘 알려진 사용예
+- 팩토리 메서드는 툴킷과 프레임워크 구현에서 많이 볼 수 있음
+
+## 관련 패턴
+- 추상 팩토리 패턴은 이 팩토리 메서드를 이용해서 구현할 때가 많음
+- 팩토리 메서드는 템플릿 메서드 패턴에서도 사용될 때가 많음 (앞에 createMaze 쪽도?)
+- 원형 패턴은 Creator 클래스의 상속이 필요하지 않음 그러나 Product 클래스에 정의된 초기화 연산은 필요함
+
+
 # 기타
 - 모티프) https://ko.wikipedia.org/wiki/%EB%AA%A8%ED%8B%B0%ED%94%84_(%EC%9C%84%EC%A0%AF_%ED%88%B4%ED%82%B7)
 - 추상 팩토리 패턴) https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
 - 복합객체) https://yeah.tistory.com/16 
 - 빌더 패턴) https://johngrib.github.io/wiki/builder-pattern/
+- 팩토리 메서드 패턴) https://johngrib.github.io/wiki/factory-method-pattern/#fn:gof
+- 팩토리 메서드 패턴2) https://niceman.tistory.com/143

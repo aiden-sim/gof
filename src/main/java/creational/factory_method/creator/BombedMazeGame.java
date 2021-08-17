@@ -7,6 +7,9 @@ import creational.common.product.Maze;
 import creational.common.product.Room;
 import creational.common.product.Wall;
 
+/**
+ * ConcreteCreator
+ */
 public class BombedMazeGame extends MazeGame {
 
     @Override

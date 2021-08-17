@@ -8,6 +8,9 @@ import creational.factory_method.product.DoorNeedingSpell;
 import creational.factory_method.product.EnchantedRoom;
 import creational.factory_method.product.Spell;
 
+/**
+ * ConcreteCreator
+ */
 public class EnchantedMazeGame extends MazeGame {
     @Override
     public Maze makeMaze() {
@@ -23,7 +26,6 @@ public class EnchantedMazeGame extends MazeGame {
     public Room makeRoom(int n) {
         return new EnchantedRoom(n, castSpell());
     }
-
 
     @Override
     public Door makeDoor(Room r1, Room r2) {

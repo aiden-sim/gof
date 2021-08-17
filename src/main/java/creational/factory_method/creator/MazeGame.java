@@ -25,9 +25,9 @@ public abstract class MazeGame {
 
     public Maze createMaze() {
         Maze maze = makeMaze();
-        Room r1 = makeRoom(1);
-        Room r2 = makeRoom(2);
-        Door theDoor = makeDoor(r1, r2);
+        Room r1 = makeRoom(1);          // 팩토리 메서드 사용
+        Room r2 = makeRoom(2);          // 팩토리 메서드 사용
+        Door theDoor = makeDoor(r1, r2);   // 팩토리 메서드 사용
 
         r1.setSide(NORTH, makeWall());
         r1.setSide(EAST, theDoor);

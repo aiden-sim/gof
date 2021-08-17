@@ -596,7 +596,28 @@ public class MazeGame {
 
 
 ## 구현 ('패턴을 구현할 때 주의해야 할 함정, 힌트, 기법 등은 무엇일까요? 특정 언어에 국한된 특이 사항은 무엇일까요?')
-
+- 구현시 다음 사항을 고려
+  - 1) 구현 방법이 크게 두 가지
+    - Creator 클래스를 추상 클래스로 정의하고, 정의한 팩토리 메서드에 대한 구현은 제공하지 않는 경우
+      - 구현을 제공한 서브클래스를 반드시 정의 
+    - Creator가 구체 클래스이고, 팩토리 메서드에 대한 기본 구현을 제공하는 경우
+  - 2) 팩토리 메서드를 매개변수화 함
+    ```
+    Product create(ProductId id) {
+        if(id == MINE) return new YourProduct; // 두개 변경
+        if(id == YOURS) return new MyProduct;
+	
+	if(id == THEIRS) return new TheirProduct; // 추가
+	
+	return super.Create(id); // 부모 호출
+    }
+    ```
+    - 생성할 문서 객체의 종류를 매개변수로 넘김
+    - 매개변수화된 팩토리 메서드를 오버라이드하면, Creator 클래스가 생성하는 제품을 쉽게 확장하거나 변경할 수 있음
+    - 마지막에 부모 클래스에 정의된 Create 호출하는데, 선언된 이외의 것을 처리하기 위해
+  - 3) 언어마다 구현 방법이 조금 다를 수 있음
+    - 
+  - 4) 템플릿을 사용하여 서브클래싱을 피함 
 
 
 
@@ -614,3 +635,4 @@ public class MazeGame {
 - 추상 팩토리 패턴) https://johngrib.github.io/wiki/abstract-factory-pattern/#fn:holub0
 - 복합객체) https://yeah.tistory.com/16 
 - 빌더 패턴) https://johngrib.github.io/wiki/builder-pattern/
+- 팩토리 메서드 패턴) https://johngrib.github.io/wiki/factory-method-pattern/#fn:gof

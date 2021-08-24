@@ -45,6 +45,7 @@ public abstract class MazeGame {
     }
 
     public static void main(String[] args) {
-
+        MazeGame mazeGame = new BombedMazeGame();
+        mazeGame.createMaze();
     }
 }

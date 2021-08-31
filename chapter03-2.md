@@ -221,8 +221,8 @@ public class BombedWall extends Wall {
   - 추상 팩토리 패턴은 원형 집합을 저장하다가 필요할 때 복제하여 제품 객체를 반환하도록 사용 가능
 - 복합체 패턴과 장식자 패턴을 많이 사용하는 곳에서도 원형 패턴을 사용하면 좋음
 
-
-
+## 추상 팩토리 패턴 에서 원형 패턴
+- P136
 
 
 
@@ -230,10 +230,4 @@ public class BombedWall extends Wall {
 - 클래스와 객체
   - 클래스 주로 상속 (정적)
   - 객체 (동적)
-- 객체에서 팩토리만 클래스고, 나머지는 객체인데 왜 팩토리만 클래스로 볼까?
-
-
-## 참고
-- prototype manager : https://lee1535.tistory.com/76
-
-
+- 

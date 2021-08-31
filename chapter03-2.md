@@ -66,17 +66,160 @@
   - 원형의 서브클래스가 Clone 연산을 구현해야 함
   - 이미 클래스가 만들어져 있으면 Clone 연산을 추가하기 어려움
 
-
 ## 구현 ('패턴을 구현할 때 주의해야 할 함정, 힌트, 기법 등은 무엇일까요? 특정 언어에 국한된 특이 사항은 무엇일까요?')
+- 정적 언어에서 매우 유용함 (컴파일 시 타입이 확정됨)
+
+- 1) 원형 관리자를 사용함
+  - 사용자(Client)는 원형 자체를 다루지 않으며, 레지스트리에서 원형을 검색하고, 레지스트리에 저장할 뿐
+    - 이런 레지스트리를 원형 관리자(prototype manager) 라고 함
+  - 원형 관리자는 어떤 키에 부합되는 원형을 저장하고, 찾아서 반환하며, 삭제하는 기능을 담당하는 저장소
+- 2) Clone 연산을 구현
+  - 원형 패턴에서 가장 어려운 부분
+    - 순환 참조에 대해서 이해 못함. 순환 참조는 가급적 배제해야 되는게 아닌가?
+  - 깊은 복사 vs 얕은 복사
+    - java도 primitive type에 대해서는 깊은 복사가 되지만, reference 형태는 얕은 복사 처리
+    - 구조가 복잡한 경우 사본과 원본이 독립적일 수 있어야 하기 때문에, 원형이 정의하는 각 요소 모두를 개별적으로 복제
+      - clone 오버라이딩을 통해 결정  
+    - save/load 얘기가 나와서 생각이 들었는데 직렬화/역직렬화를 통해서도 깊은 복사 가능 (하지만 성능적인 부분 고려)
+ 
+- 3) Clone을 초기화
+  - Clone 연산에 매개변수를 정의하게 되면 복제 인터페이스의 일관성이 없어짐
+  - 원형 클래스의 상태를 재정의할 연산(setter)이 있다면, 사용자는 객체 복제 직후에 이들 연산을 호출할 것임
+  - 아니면 Initialize 등의 이름을 가진 연상을 사용자에게 제공 (값을 파라미터로 받겠지?)
 
 
 ## 예제코드
+```
+public interface MazeFactory {
+    Maze makeMaze();
 
+    Wall makeWall();
+
+    Room makeRoom(int n);
+
+    Door makeDoor(Room r1, Room r2);
+}
+
+
+/**
+ * Client
+ * 생성할 객체의 원형(인터페이스)로 초기화됨
+ */
+public class MazePrototypeFactory implements MazeFactory {
+    Maze prototypeMaze;
+    Wall prototypeWall;
+    Room prototypeRoom;
+    Door prototypeDoor;
+
+    public MazePrototypeFactory(Maze maze, Wall wall, Room room, Door door) {
+        prototypeMaze = maze;
+        prototypeWall = wall;
+        prototypeRoom = room;
+        prototypeDoor = door;
+    }
+
+    @Override
+    public Maze makeMaze() {
+        return prototypeMaze.clone();
+    }
+
+    @Override
+    public Wall makeWall() {
+        return prototypeWall.clone();
+    }
+
+    @Override
+    public Room makeRoom(int n) {
+        return prototypeRoom.clone();
+    }
+
+    @Override
+    public Door makeDoor(Room r1, Room r2) {
+        Door door = prototypeDoor.clone();
+        door.initialize(r1, r2);
+        return door;
+    }
+}
+
+/**
+ * Prototype
+ */
+public class Door extends MapSite implements Cloneable {
+    public Door() {
+
+    }
+
+    // 복사 생성자 추가
+    public Door(Door other) {
+        room1 = other.room1;
+        room2 = other.room2;
+    }
+
+    public void initialize(Room room1, Room room2) {
+        this.room1 = room1;
+        this.room2 = room2;
+    }
+
+    /**
+     * Clone operation
+     */
+    @Override
+    public Door clone() {
+        try {
+            return (Door) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return new Door(this);
+        }
+    }
+}
+
+/**
+ * Concrete Prototype
+ */
+public class BombedWall extends Wall {
+    private boolean hasBomb;
+
+    public BombedWall() {
+
+    }
+
+    /**
+     * 복사 생성
+     */
+    public BombedWall(BombedWall wall) {
+        this.hasBomb = wall.hasBomb;
+    }
+
+    @Override
+    public BombedWall clone() {
+        return new BombedWall(this);
+    }
+}
+
+```
+- MazePrototypeFactory (client)
+  - 생성할 객체의 원형(인터페이스)으로 초기화 됨
+    - 서브 클래스 필요 없음
+  - MazeFactory 인터페이스를 확장 하여 벽, 방, 문 등을 만드는 함수 정의
+    - clone을 통해 복제하고 initialize가 필요 시 초기화 
+  - 미로의 형식을 바꾸려면 MazePrototypeFactory를 이용하되 다른 원형으로 초기화 하면 됨
+- Door, Maze, Room, Wall(prototype)
+  - 인스턴스처럼 원형으로 사용할 수 있는 객체는 반드시 clone 연산자를 제공
+  - 객체 복제를 위해 복사 생성자도 있어야 됨
+  - 내부 연산을 재초기화하기 위한 연산도 필요함
+- BombedWall, RoomWithABomb(concrete prototype)
+  - Clone을 재정의하고 복사 생성자를 구현
+  - 사용자가 구체적인 서브클래스를 몰라도 원형을 복제할 수 있도록 해야 함
+    - 사용자가 원하는 타입으로 다운캐스트할 필요가 업성야 함
 
 ## 잘 알려진 사용예
 
 
 ## 관련 패턴
+- 원형 패턴과 추상 팩토리 패턴은 어떤 면에서는 경쟁적인 관계임
+  - 함께 사용 가능
+  - 추상 팩토리 패턴은 원형 집합을 저장하다가 필요할 때 복제하여 제품 객체를 반환하도록 사용 가능
+- 복합체 패턴과 장식자 패턴을 많이 사용하는 곳에서도 원형 패턴을 사용하면 좋음
 
 
 
@@ -88,4 +231,9 @@
   - 클래스 주로 상속 (정적)
   - 객체 (동적)
 - 객체에서 팩토리만 클래스고, 나머지는 객체인데 왜 팩토리만 클래스로 볼까?
+
+
+## 참고
+- prototype manager : https://lee1535.tistory.com/76
+
 

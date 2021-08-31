@@ -13,6 +13,9 @@ public class BombedWall extends Wall {
 
     }
 
+    /**
+     * 복사 생성
+     */
     public BombedWall(BombedWall wall) {
         this.hasBomb = wall.hasBomb;
     }

@@ -7,6 +7,7 @@ import creational.common.product.Wall;
 
 /**
  * Client
+ * 생성할 객체의 원형(인터페이스)로 초기화됨
  */
 public class MazePrototypeFactory implements MazeFactory {
     Maze prototypeMaze;

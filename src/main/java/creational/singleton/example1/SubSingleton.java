@@ -1,4 +1,4 @@
-package creational.singleton.subclass;
+package creational.singleton.example1;
 
 public class SubSingleton extends Singleton {
     private static SubSingleton instance;

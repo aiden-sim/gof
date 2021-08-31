@@ -1,4 +1,4 @@
-package creational.singleton.subclass;
+package creational.singleton.example1;
 
 import java.util.HashMap;
 import java.util.Map;

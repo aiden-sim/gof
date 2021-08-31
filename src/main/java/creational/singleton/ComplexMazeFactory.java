@@ -1,7 +1,6 @@
 package creational.singleton;
 
 public class ComplexMazeFactory {
-
     private static ComplexMazeFactory instance;
 
     protected ComplexMazeFactory() {

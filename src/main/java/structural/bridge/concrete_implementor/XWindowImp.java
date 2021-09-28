@@ -3,6 +3,9 @@ package structural.bridge.concrete_implementor;
 import structural.Point;
 import structural.bridge.implementor.WindowImp;
 
+/**
+ * concrete implementor
+ */
 public class XWindowImp implements WindowImp {
     @Override
     public void impTop() {

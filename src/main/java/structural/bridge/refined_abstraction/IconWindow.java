@@ -4,6 +4,9 @@ import structural.View;
 import structural.bridge.abstraction.Window;
 import structural.bridge.implementor.WindowImp;
 
+/**
+ * refined abstraction
+ */
 public class IconWindow extends Window {
     private String bitmapName;
 

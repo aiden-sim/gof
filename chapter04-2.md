@@ -83,12 +83,137 @@
 
 ## 예제코드
 ```
+/**
+ * abstraction
+ */
+public class Window {
+    private View contents;
+    private WindowImp imp;
+
+    public Window(View contents) {
+        this.contents = contents;
+    }
+
+    public void drawRect(Point point1, Point point2) {
+        WindowImp imp = getWindowImp();
+        if (imp != null) {
+            imp.deviceRect(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+        }
+    }
+
+    public void drawText(String text, Point at) {
+        WindowImp imp = getWindowImp();
+        if (imp != null) {
+            imp.deviceText(text, at);
+        }
+    }
+
+    protected WindowImp getWindowImp() {
+        if (imp == null) {
+            imp = WindowSystemFactory.getInstance().makeWindowImp();
+        }
+        return imp;
+    }
+
+    protected View getView() {
+        return this.contents;
+    }
+}
+
+/**
+ * implementor
+ */
+public interface WindowImp {
+    void impTop();
+
+    void impBottom();
+
+    void impSetExtent(Point extent);
+
+    void impSetOrigin(Point origin);
+
+    void deviceRect(float x, float y, float w, float h);
+
+    void deviceText(String text, Point at);
+
+    void deviceBitmap(String text, float x, float y);
+}
+
+/**
+ * refined abstraction
+ */
+public class ApplicationWindow extends Window {
+    public ApplicationWindow(View contents) {
+        super(contents);
+    }
+
+    @Override
+    public void drawContents() {
+        getView().drawOn(this);
+    }
+}
+
+/**
+ * refined abstraction
+ */
+public class IconWindow extends Window {
+    private String bitmapName;
+
+    public IconWindow(View contents) {
+        super(contents);
+    }
+
+    @Override
+    public void drawContents() {
+        WindowImp imp = getWindowImp();
+        if (imp != null) {
+            imp.deviceBitmap(bitmapName, 0.0f, 0.0f);
+        }
+    }
+}
 
 
+/**
+ * concrete implementor
+ */
+public class XWindowImp implements WindowImp {
+    @Override
+    public void impTop() {
+    }
+
+    @Override
+    public void impBottom() {
+    }
+
+    @Override
+    public void impSetExtent(Point extent) {
+    }
+
+    @Override
+    public void impSetOrigin(Point origin) {
+    }
+
+    @Override
+    public void deviceRect(float x, float y, float w, float h) {
+    }
+
+    @Override
+    public void deviceText(String text, Point at) {
+    }
+
+    @Override
+    public void deviceBitmap(String text, float x, float y) {
+    }
+}
 ```
 
 ## 잘 알려진 사용예
 
 
 ## 관련 패턴
-- 
+- 추상 팩토리 패턴을 이용해서 특정 가교를 생성하고 복합할 수 있도록 함
+- 적응자 패턴(Adapter)은 서로 관련이 없는 클래스들이 함께 동작하게 만드는 쪽에 특화시켜 만든 패턴
+  - 보통 각 클래스의 설계가 끝난 후에 적용 (후적용)
+- 반면 가교 패턴은 설계 단계 초기에 투입되어 추상화 및 구현이 독립적으로 다양화되도록 만드는데 사용 
+
+

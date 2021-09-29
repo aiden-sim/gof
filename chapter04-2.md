@@ -337,7 +337,164 @@ public class XWindowImp implements WindowImp {
     - 이때는 Composite를 상속하는 서브클래스 각각에 자신이 정의한 자식 관리 방법에 따라 관리에 필요한 구현을 별도로 정의해야됨 (해석자 패턴 적용 가능) 
   
 ## 예제 코드
+```
+/**
+ * component
+ */
+public abstract class Equipment implements Iterable<Equipment> {
+    private String name;
 
+    protected Equipment(String name) {
+        this.name = name;
+    }
+
+    public abstract int power();
+
+    public abstract float netPrice();
+
+    public abstract float discountPrice();
+
+    public String getName() {
+        return name;
+    }
+
+    public void add(Equipment equipment) throws OperationNotSupportedException {
+        throw new OperationNotSupportedException();
+    }
+
+    public void remove(Equipment equipment) throws OperationNotSupportedException {
+        throw new OperationNotSupportedException();
+    }
+
+    @Override
+    public Iterator<Equipment> iterator() {
+        return new Iterator<Equipment>() {
+            @Override
+            public boolean hasNext() {
+                return false;
+            }
+
+            @Override
+            public Equipment next() {
+                return null;
+            }
+
+            @Override
+            public void remove() {
+            }
+        };
+    }
+}
+
+/**
+ * leaf
+ */
+public class FloppyDisk extends Equipment {
+    private static final int FLOPPYDISK_POWER = 50;
+    private static final int FLOPPYDISK_NETPRICE = 100;
+    private static final int FLOPPYDISK_DISCOUNTPRICE = 70;
+
+    public FloppyDisk(String name) {
+        super(name);
+    }
+
+    @Override
+    public int power() {
+        return FLOPPYDISK_POWER;
+    }
+
+    @Override
+    public float netPrice() {
+        System.out.println("Adding net price of Floppy Disk: " + FLOPPYDISK_NETPRICE);
+        return FLOPPYDISK_NETPRICE;
+    }
+
+    @Override
+    public float discountPrice() {
+        return FLOPPYDISK_DISCOUNTPRICE;
+    }
+}
+
+/**
+ * composite
+ */
+public class CompositeEquipment extends Equipment {
+    private List<Equipment> equipmentList;
+
+    public CompositeEquipment(String name) {
+        super(name);
+        equipmentList = new ArrayList<Equipment>();
+    }
+
+    @Override
+    public int power() {
+        int power = 0;
+        for (Equipment equipment : this) {
+            power += equipment.power();
+        }
+        return power;
+    }
+
+    /**
+     * 원가
+     */
+    @Override
+    public float netPrice() {
+        float netPrice = 0.0f;
+        for (Equipment equipment : this) {
+            netPrice += equipment.netPrice();
+        }
+        return netPrice;
+    }
+
+    /**
+     * 할인가
+     */
+    @Override
+    public float discountPrice() {
+        float discountPrice = 0.0f;
+        for (Equipment equipment : this) {
+            discountPrice += equipment.discountPrice();
+        }
+        return discountPrice;
+    }
+
+    @Override
+    public void add(Equipment equipment) {
+        equipmentList.add(equipment);
+    }
+
+    @Override
+    public void remove(Equipment equipment) {
+        equipmentList.remove(equipment);
+    }
+
+    @Override
+    public Iterator<Equipment> iterator() {
+        return equipmentList.iterator();
+    }
+}
+
+/**
+ * Client
+ */
+public class Client {
+    public static void main(String[] args) {
+        Cabinet cabinet = new Cabinet("Cabinet for PC");
+        Chassis chassis = new Chassis("Chassis for PC");
+
+        cabinet.add(chassis);
+        Bus bus = new Bus("Bus MCA");
+        bus.add(new Card("Token Ring Card 16Mbps"));
+
+        chassis.add(bus);
+        chassis.add(new FloppyDisk("Floppy Disk Drive 3,5\""));
+
+        System.out.println("Total net price: " + cabinet.netPrice());
+
+    }
+}
+```
 
 ## 잘 알려진 사용예
 - 요즘 자주 사용하는 filter 구조?

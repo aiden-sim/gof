@@ -240,9 +240,55 @@ public class Client {
     - 사용자는 Facade를 사용할지 서브시스템 클래스를 직접 사용할지 결정할 수 있음 
 
 ## 구현
-- 퍼사드 
+- 퍼사드 패턴을 구현하기 위해 고려할 사항들
+  - 1) 사용자와 서브시스템 간의 결합도 줄이기
+    - 사용자와 서브시스템 간의 의존성을 줄이는 방법은 Facade를 추상 클래스로 정의하고, 서브시스템을 나타내기 위해 이를 상속하는 구체 서브클래스를 정의하여 다른 구현을 정의하도록 하는 것
+  - 2) 서브시스템 클래스 중 공개할 것과 감출 것
+    - 클래스는 상태와 연산을, 서브시스템은 클래스를 캡슐화함
+    - 서브시스템의 공개 인터페이스는 사용자가 직접 접근할 수 있는 클래스들이고, 비공개 인터페이스는 서브시스템 자체가 됨
 
 ## 예제코드
+```
+/**
+ * facade
+ */
+public class Compiler {
+    public void compile(InputStream input, OutputStream output) {
+        Scanner scanner = new Scanner(input);
+        ProgramNodeBuilder builder = new ProgramNodeBuilder();
+        Parser parser = new Parser();
 
+        parser.parse(scanner, builder);
 
+        RISCCodeGenerator generator = new RISCCodeGenerator(output);
+        ProgramNode parseTree = builder.getRootNode();
+        parseTree.traverse(generator);
+    }
+}
+
+/**
+ * client
+ */
+public class Client {
+    public static void main(String[] args) {
+        Compiler compiler = new Compiler();
+        compiler.compile(System.in, System.out);
+    }
+}
+```
+- 퍼사드 패턴의 임무는 일반적인 사용을 위해 인터페이스를 간소화 하는 것
+
+## 잘 알려진 사용예
+- slf4j
+  - ![slf4j](https://user-images.githubusercontent.com/7076334/136211296-8d99b674-5c93-4e8e-a0d7-10125d7e26e1.png)
+  - https://sshplendid.github.io/blog/dev/designpattern/2020/02/24/facade-pattern/
+  - https://team404.tistory.com/17
+
+## 관련 패턴
+- 추상 팩토리 패턴 : 서브시스템에 독립적인 방법으로, 서브시스템 객체를 생성하는 인터페이스를 제공하기 위해 Facade와 함께 사용 가능
+- 중재자 패턴 : 
+  - 중재자 패턴의 목적은 여러 객체들 사이의 협력 관계를 추상화하여 기능성의 집중화를 막자는 것
+  - 중재자 패턴에 참여하는 객체는 서로를 직접 알지 못하고 단지 중재자를 통해서만 상호작용
+  - 이에 비해 퍼사드는 서브시스템 인터페이스 자체를 추상화하여 사용을 용이하게 하려는 목적
+- 단일체 : 퍼사드 객체가 하나만 있어도 된다면, 단일체로 구현 가능
 

@@ -5,6 +5,9 @@ import structural.facade.subsystem.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * facade
+ */
 public class Compiler {
     public void compile(InputStream input, OutputStream output) {
         Scanner scanner = new Scanner(input);

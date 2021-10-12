@@ -5,6 +5,9 @@ import structural.Point;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * real subject
+ */
 public class Image implements Graphic {
     private String fileName;
     private Point extent;

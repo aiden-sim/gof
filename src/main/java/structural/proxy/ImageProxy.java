@@ -5,6 +5,9 @@ import structural.Point;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * proxy
+ */
 public class ImageProxy implements Graphic {
     private String fileName;
     private Point extent;
@@ -42,13 +45,12 @@ public class ImageProxy implements Graphic {
     }
 
     @Override
-    public void load(InputStream inputStream) {
-        System.out.println("Load extent and fileName from inputStream");
-    }
-
-    @Override
     public void save(OutputStream outputStream) {
         System.out.println("Save extent and fileName to outputStream");
     }
 
+    @Override
+    public void load(InputStream inputStream) {
+        System.out.println("Load extent and fileName from inputStream");
+    }
 }

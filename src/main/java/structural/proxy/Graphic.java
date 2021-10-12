@@ -5,6 +5,9 @@ import structural.Point;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * subject
+ */
 public interface Graphic {
     void draw(Point at);
 

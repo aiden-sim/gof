@@ -283,3 +283,14 @@ public class Client {
 ## 참고
 - https://k0102575.github.io/articles/2020-02/chain-of-responsibility-pattern
 
+# 명령(COMMAND)
+## 의도
+- 요청 자체를 캡슐화 하는 것
+- 이를 통해 요청이 서로 다른 사용자를 매개변수로 만들고, 요청을 대기시키거나 로깅하며, 되돌릴 수 있는 연산을 지원
+
+## 다른 이름
+- 작동(Action), 트랜잭션(Transaction)
+
+## 동기
+- 
+

@@ -292,5 +292,21 @@ public class Client {
 - 작동(Action), 트랜잭션(Transaction)
 
 ## 동기
-- 
+
+## 활용성
+-
+
+## 구조
+- ![command1](https://user-images.githubusercontent.com/7076334/137960412-5dba86fb-324d-480c-8ad3-014683933ba0.png)
+
+## 참여자
+- Command : 연산 수행에 필요한 인터페이스를 선언
+- ConcreteCommand(PasteCommand, OpenCommand) : 
+  - Receiver 객체와 액션 간의 액션 간의 연결성을 정의함
+  - 또한 처리 객체에 정의된 연산을 호출하도록 Execute를 구현
+- Client(Application) : ConcreteCommand 객체를 생성하고 처리 객체로 정의
+- Invoker(MenuItem) : 명령어에 처리를 수행할 것을 요청
+- Receiver(Document, Application)
+  - 요청에 관련된 연산 수행 방법을 알고 있음
+  - 어떤 클래스도 요청 수신자로서 동작할 수 있음
 

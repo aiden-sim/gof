@@ -99,15 +99,182 @@
     - 객체들 간의 연결 고리가 잘 정의되지 않는경우, 요청은 처리되지 못한 채로 버려질 수 있음 
 
 ## 구현
-
+- 책임 연쇄 패턴을 구현할 때 고려사항
+  - 1) 후속 처리자들의 연결 고리 구현하기
+    - 후속 처리자들의 연결 고리 구현에 두가지 방법이 있음
+      - 새로운 연결을 만드는 것
+      - 이미 있는 연결 정보를 사용하는 것
+    - 이미 있는 연결 정보를 사용하는 방법
+      - 부분-전체에 해당하는 관계였다면, 이 문제에는 부모에 대한 참조자가 정의되었을 것이고, 이를 후속 처리자에 대한 참조자로 이용
+      - 복합체 패턴을 참조하면 부모 객체의 참조자에 대한 자세한 설명을 얻을 수 있음 
+  - 2) 후속 처리자 연결하기
+    - 연결 정보에 대한 미리 정의된 참조자가 없다면 직접 정의해야 하는데, Handler 클래스는 요청 처리에 대한 인터페이스를 정의할 뿐만 아니라, 후속 처리자에 대한 정보 저장의 인스턴스 변수도 정의
+    - 이 정보를 이용해서 Handler 클래스의 기본 구현은 자신의 후속 처리자로 정의된 객체에 HandleRequest() 메시지를 전달하도록 만듬
+  - 3) 처리 요청의 표현부를 정의
+    - 가장 쉬운 방법은 HandlHelp() 연산처럼 하드코딩 (P.300)
+      - 간편하고 안전하지만, Handler 클래스가 정의한 연산의 집합에 대해서만 요청을 전달할 수 있어서 제한적
+    - 처리를 코드화하여 매개변수로 받아들이도록 하는 처리자 함수를 하나만 정의
+      - 이렇게 하려면, 메시지 송신 측과 수신 측 사이에 처리 요청을 어떻게 코드로 만들지에 대한 동의가 있어야 함
+      - 좀 더 유연한 방법이지만, 코드에 따라서 대응하는 처리 요청을 발생시키려면 조건문을 정의해야 함
+      - 하드코딩 보다 안전하지 못함
+    - 매개변수 전송 문제를 처리하기 위해서 매개변수를 묶어 별도의 객체로 만듬
+      - Request 클래스를 이용해서 처리 요청을 명시적으로 정의 (P.305 코드)
+        - 새로운 요청 시, Request 서브클래스로 정의하면 됨
+        - Handler는 어떤 종류의 처리 요청인지만 알면 필요한 매개변수에 접근 가능
+        - HandlerRequest() 연산을 상속한 후 재정의하면 새로운 처리방법으로 구현 가능
+  - 4) 스몰토크를 쓸 때 자동 전달 기능 이용 
+    - doesNotUnderstand 매커니즘을 이용하여 처리 요청을 전달할 수 있음
 
 ## 예제코드
+- 도움말 시스템
+  - ![chain4](https://user-images.githubusercontent.com/7076334/137953317-5895755a-2fff-41c4-bf5f-a49b0bb98ee7.png)
+
+```
+/**
+ * Handler
+ */
+public class HelpHandler {
+    private HelpHandler successor;
+    private Topic topic;
+
+    public HelpHandler(HelpHandler successor) {
+        this(successor, Topic.NO_HELP_TOPIC);
+    }
+
+    public HelpHandler(HelpHandler successor, Topic topic) {
+        this.successor = successor;
+        this.topic = topic;
+    }
+
+    public void setHandler(HelpHandler handler, Topic topic) {
+        this.successor = handler;
+        this.topic = topic;
+    }
+
+    public boolean hasHelp() {
+        return topic != Topic.NO_HELP_TOPIC;
+    }
+
+    public void handleHelp() {
+        if (successor != null) {
+            successor.handleHelp();
+        }
+    }
+}
+
+/**
+ * ConcreteHandler
+ */
+public class Widget extends HelpHandler {
+    @SuppressWarnings("unused")
+    private Widget parent;
+
+    protected Widget(Widget parent) {
+        this(parent, Topic.NO_HELP_TOPIC);
+    }
+
+    protected Widget(Widget parent, Topic topic) {
+        super(parent, topic);
+        this.parent = parent;
+    }
+}
+
+/**
+ * ConcreteHandler
+ */
+public class Button extends Widget {
+    public Button(Widget parent) {
+        this(parent, Topic.NO_HELP_TOPIC);
+    }
+
+    public Button(Widget parent, Topic topic) {
+        super(parent, topic);
+    }
+
+    @Override
+    public void handleHelp() {
+        if (hasHelp()) {
+            System.out.println("Button: handling help request ");
+        } else {
+            super.handleHelp();
+        }
+    }
+}
+
+/**
+ * ConcreteHandler
+ */
+public class Dialog extends Widget {
+    public Dialog(HelpHandler handler) {
+        this(handler, Topic.NO_HELP_TOPIC);
+    }
+
+    public Dialog(HelpHandler handler, Topic topic) {
+        super(null);
+        setHandler(handler, topic);
+    }
+
+    @Override
+    public void handleHelp() {
+        if (hasHelp()) {
+            System.out.println("Dialog: handling help request");
+        } else {
+            super.handleHelp();
+        }
+    }
+}
+
+/**
+ * ConcreteHandler
+ */
+public class Application extends HelpHandler {
+    public Application(Topic topic) {
+        super(null, topic);
+    }
+
+    @Override
+    public void handleHelp() {
+        System.out.println("Application: handling help request");
+    }
+}
+
+/**
+ * Client
+ */
+public class Client {
+    public static void main(String[] args) {
+        Application application = new Application(Topic.APPLICATION_TOPIC);
+        Dialog dialog = new Dialog(application, Topic.PRINT_TOPIC);
+        Button button = new Button(dialog, Topic.PAPER_ORIENTATION_TOPIC);
+        Button button2 = new Button(dialog);
+
+        application.handleHelp();
+        button.handleHelp();
+        button2.handleHelp();
+        dialog.handleHelp();
+    }
+}
+```
+- HelpHandler
+  - 도움말 요청을 처리하는데 필요한 인터페이스를 정의
+  - 도움말 목록을 관리하고 HelpHandler의 연결 고리 다음번 객체에 대한 참조자를 관리
+  - 가장 중요한 연산은 handleHelp()로 서브클래스들에서 이 연산을 재정의 해야됨
+  - hasHelp()는 관련된 도움말 항목이 있는지 확인
+- Widget
+  - 모든 위젯의 부모 클래스
+  - Widget은 HelpHandler 서브클래스로, 모든 사용자 인터페이스 요소들은 이와 관련된 도움말 기능이 있기 때문
+- Button
+  - Widget의 서브클래스이고, Button의 생성자는 자신을 포함하는 객체 대한 참조자와 도움말 항목 정보를 매개변수로 받아들임
+  - 도움말 항목이 있다면 도움말을 보여주고 객체 찾는 일은 끝, 도움말이 없다면 다음 객체에게 전달
+- Dialog
+  - Button과 비슷하지만 차이는 Dialog 객체 다음에 오는 객체는 위젯 객체가 아니라 임의의 HelpHandler 클래스의 인스턴스
+  - 
 
 ## 잘 알려진 사용예
 - java try-catch
 
 ## 관련 패턴
-
+- 책임 연쇄 패턴은 복합체 패턴과 함께 대부분 사용되는데, 이때 구성요소의 부모는 후속 처리자처럼 동작함
 
 ## 참고
 - https://k0102575.github.io/articles/2020-02/chain-of-responsibility-pattern

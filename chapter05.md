@@ -276,6 +276,7 @@ public class Client {
 
 ## 잘 알려진 사용예
 - java try-catch
+- spring security filter chain
 
 ## 관련 패턴
 - 책임 연쇄 패턴은 복합체 패턴과 함께 대부분 사용되는데, 이때 구성요소의 부모는 후속 처리자처럼 동작함
@@ -292,6 +293,32 @@ public class Client {
 - 작동(Action), 트랜잭션(Transaction)
 
 ## 동기
+- 명령 패턴은 툴킷 객체가 요청 자체를 객체로 바꿈으로써 명시되지 않은 응용프로그램 객체의 요청을 처리할 수 있도록 지원하는 패턴
+- 이 패턴의 핵심은 연산을 실행하는데 필요한 인터페이스를 선언해 놓은 Command 추상 클래스임
+  - 가장 기본적인 연산이 Execute()
+  - Command 추상 클래스에서 상속받은 Command 서브클래스들은 수신 객체에 대한 참조자를 인스턴스 변수로 저장하며, 이 수신 객체에 정의된 요청을 호출하도록 Execute()를 구현하여 수신자-작동 쌍을 정의
+  - 수신 객체는 자신에게 전달된 요청을 어떻게 처리해야 하는지 알고 있음
+
+- 메뉴예제
+  - ![command2](https://user-images.githubusercontent.com/7076334/137965098-7f8cd83c-dd64-4407-9fab-710b4bb7a95f.png)
+  - MenuItem(Invoker), Document(Receiver)로 보면 될까?
+  - 응용프로그램은 각 MenuItem 객체를 Command의 어떤 서브클래스 인스턴스와 연결되도록 설정
+  - 사용자가 MenuItem 인스턴스를 선택하면 MenuItem 인스턴스는 연결된 Command 서브클래스의 Execute() 연산 호출
+    - MenuItem는 Command의 어떤 서브클래스가 사용되는지 모름
+    - Command 서브클래스들에 요청을 처리해 줄 객체에 대한 정보가 있으며, 이들 객체에 하나 이상의 연산을 호출
+      - PasteCommand
+        - 클립보드에 있는 내용을 문서로 붙이는 역할
+        - Document의 Paste()를 호출
+      - OpenCommand
+        - 사용자에게 열어야 하는 문서의 이름을 물어 보고 해당하는 Document 객체를 생성한 다음, 응용프로그램에서 다루는 문서로 첨가 후 염
+      - MacroCommand
+        - 일련의 명령어를 순차적으로 처리해야 할 때
+
+- 위의 예제를 보면 Command 패턴이 연산을 호출하는 객체와 이를수행하는 객체를 분리하고 있음을 알 수 있음
+  - 이로써 사용자 인터페이스를 구현하는 데 많은 융통성을 부여할 수 있음
+  - 명령어를 동적으로 교체 가능
+    - 사용자 인터페이스는 동일한데, 선택시에 처리되는 방식을 달리하려면 Command를 상속하는 새로운 클래스만 정의  
+
 
 ## 활용성
 -

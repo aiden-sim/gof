@@ -271,6 +271,9 @@ public class Client {
 - Client
   - HelpHandler 클래스를 호출하여 도움말을 요청 (handleHelp() 메서드 호출)
 
+- 최종적인 호출 형태
+  - ![chain1](https://user-images.githubusercontent.com/7076334/137943545-3920b292-1230-488f-895b-c244ab24fbf4.png)
+
 ## 잘 알려진 사용예
 - java try-catch
 

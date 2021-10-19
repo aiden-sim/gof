@@ -246,12 +246,8 @@ public class Client {
         Application application = new Application(Topic.APPLICATION_TOPIC);
         Dialog dialog = new Dialog(application, Topic.PRINT_TOPIC);
         Button button = new Button(dialog, Topic.PAPER_ORIENTATION_TOPIC);
-        Button button2 = new Button(dialog);
 
-        application.handleHelp();
         button.handleHelp();
-        button2.handleHelp();
-        dialog.handleHelp();
     }
 }
 ```
@@ -268,7 +264,12 @@ public class Client {
   - 도움말 항목이 있다면 도움말을 보여주고 객체 찾는 일은 끝, 도움말이 없다면 다음 객체에게 전달
 - Dialog
   - Button과 비슷하지만 차이는 Dialog 객체 다음에 오는 객체는 위젯 객체가 아니라 임의의 HelpHandler 클래스의 인스턴스
-  - 
+  - 해당 예제에서는 Application 인스턴스가 다음 후보로 옴
+- Application
+  - 응용프로그램은 위젯이 아니기 때문에 HelpHandler 클래스를 직접 상속
+  - 도움말 요청이 이 단계까지 전달되었으면 응용프로그램에 대한 정보를 제공
+- Client
+  - HelpHandler 클래스를 호출하여 도움말을 요청 (handleHelp() 메서드 호출)
 
 ## 잘 알려진 사용예
 - java try-catch
@@ -278,10 +279,4 @@ public class Client {
 
 ## 참고
 - https://k0102575.github.io/articles/2020-02/chain-of-responsibility-pattern
-
-
-
-
-
-
 

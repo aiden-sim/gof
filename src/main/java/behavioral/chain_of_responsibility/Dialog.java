@@ -1,5 +1,8 @@
 package behavioral.chain_of_responsibility;
 
+/**
+ * ConcreteHandler
+ */
 public class Dialog extends Widget {
     public Dialog(HelpHandler handler) {
         this(handler, Topic.NO_HELP_TOPIC);

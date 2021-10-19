@@ -1,5 +1,8 @@
 package behavioral.chain_of_responsibility;
 
+/**
+ * Handler
+ */
 public class HelpHandler {
     private HelpHandler successor;
     private Topic topic;

@@ -1,5 +1,8 @@
 package behavioral.chain_of_responsibility;
 
+/**
+ * Client
+ */
 public class Client {
     public static void main(String[] args) {
         Application application = new Application(Topic.APPLICATION_TOPIC);

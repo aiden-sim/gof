@@ -1,5 +1,8 @@
 package behavioral.chain_of_responsibility;
 
+/**
+ * ConcreteHandler
+ */
 public class Button extends Widget {
     public Button(Widget parent) {
         this(parent, Topic.NO_HELP_TOPIC);

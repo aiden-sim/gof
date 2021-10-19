@@ -1,5 +1,8 @@
 package behavioral.chain_of_responsibility;
 
+/**
+ * ConcreteHandler
+ */
 public class Widget extends HelpHandler {
     @SuppressWarnings("unused")
     private Widget parent;

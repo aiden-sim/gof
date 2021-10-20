@@ -276,6 +276,7 @@ public class Client {
 
 ## 잘 알려진 사용예
 - java try-catch
+- spring security filter chain
 
 ## 관련 패턴
 - 책임 연쇄 패턴은 복합체 패턴과 함께 대부분 사용되는데, 이때 구성요소의 부모는 후속 처리자처럼 동작함
@@ -283,3 +284,277 @@ public class Client {
 ## 참고
 - https://k0102575.github.io/articles/2020-02/chain-of-responsibility-pattern
 
+# 명령(COMMAND)
+## 의도
+- 요청 자체를 캡슐화 하는 것
+- 이를 통해 요청이 서로 다른 사용자를 매개변수로 만들고, 요청을 대기시키거나 로깅하며, 되돌릴 수 있는 연산을 지원
+
+## 다른 이름
+- 작동(Action), 트랜잭션(Transaction)
+
+## 동기
+- 명령 패턴은 툴킷 객체가 요청 자체를 객체로 바꿈으로써 명시되지 않은 응용프로그램 객체의 요청을 처리할 수 있도록 지원하는 패턴
+- 이 패턴의 핵심은 연산을 실행하는데 필요한 인터페이스를 선언해 놓은 Command 추상 클래스임
+  - 가장 기본적인 연산이 Execute()
+  - Command 추상 클래스에서 상속받은 Command 서브클래스들은 수신 객체에 대한 참조자를 인스턴스 변수로 저장하며, 이 수신 객체에 정의된 요청을 호출하도록 Execute()를 구현하여 수신자-작동 쌍을 정의
+  - 수신 객체는 자신에게 전달된 요청을 어떻게 처리해야 하는지 알고 있음
+
+- 메뉴예제
+  - ![command2](https://user-images.githubusercontent.com/7076334/137965098-7f8cd83c-dd64-4407-9fab-710b4bb7a95f.png)
+  - MenuItem(Invoker), Document(Receiver)로 보면 될까?
+  - 응용프로그램은 각 MenuItem 객체를 Command의 어떤 서브클래스 인스턴스와 연결되도록 설정
+  - 사용자가 MenuItem 인스턴스를 선택하면 MenuItem 인스턴스는 연결된 Command 서브클래스의 Execute() 연산 호출
+    - MenuItem는 Command의 어떤 서브클래스가 사용되는지 모름
+    - Command 서브클래스들에 요청을 처리해 줄 객체에 대한 정보가 있으며, 이들 객체에 하나 이상의 연산을 호출
+      - PasteCommand
+        - 클립보드에 있는 내용을 문서로 붙이는 역할
+        - Document의 Paste()를 호출
+      - OpenCommand
+        - 사용자에게 열어야 하는 문서의 이름을 물어 보고 해당하는 Document 객체를 생성한 다음, 응용프로그램에서 다루는 문서로 첨가 후 염
+      - MacroCommand
+        - 일련의 명령어를 순차적으로 처리해야 할 때
+
+- 위의 예제를 보면 Command 패턴이 연산을 호출하는 객체와 이를수행하는 객체를 분리하고 있음을 알 수 있음
+  - 이로써 사용자 인터페이스를 구현하는 데 많은 융통성을 부여할 수 있음
+  - 명령어를 동적으로 교체 가능
+    - 사용자 인터페이스는 동일한데, 선택시에 처리되는 방식을 달리하려면 Command를 상속하는 새로운 클래스만 정의  
+
+
+## 활용성
+- 명령 패턴은 다음과 같은 일을 하고 싶을 떄 사용
+  - 수행할 동작을 객체로 매개변수화하고자 할 때
+    - 절차지향 프로그램에서는 이를 콜백함수로 등록했다가 나중에 호출되는 함수를 사용해서 이러한 매개변수화를 표현
+    - 명령 패턴은 콜백을 객체지향 방식으로 나타낸 것
+  - 서로 다른 시간에 요청을 명시하고, 저장하며, 실행하고 싶을 때
+    - Command 객체는 원래의 요청과 다른 생명주기가 있음
+    - 이부분 정확하게 이해 못함
+  - 실행 취소 기능을 지원하고 싶을 때
+    - Command의 Execute(), Unexecute()를 통해 수행과 취소를 반복할 수 있음
+  - 시스템이 고장 났을 때 재적용이 가능하도록 변경 과정에 대한 로깅을 지원하고 싶을 때
+    - Command 인터페이스를 확장해서 load()와 store() 연산을 정의하면 상태의 변화를 지속적 저장소에 저장해 둘 수 있음
+    - 시스템 장애가 발생했을 때 해당 저장소에서 저장된 명령어를 읽어 다시 Execute() 연산을 통해 재실행
+    - 이 부분은 git이나 redis의 aof를 생각함
+  - 기본적인 연산의 조합으로 만든 상위 수준 연산을 써서 시스템을 구조화하고 싶을 때
+    - 정보 시스템의 일반적인 특성은 트랜잭션을 처리해야 한다는 것 
+    - Command 클래스는 일관된 인터페이스를 정의하는데, 이로써 모든 트랜잭션이 동일한 방식으로 호출됨
+
+## 구조
+- ![command1](https://user-images.githubusercontent.com/7076334/137960412-5dba86fb-324d-480c-8ad3-014683933ba0.png)
+
+## 참여자
+- Command : 연산 수행에 필요한 인터페이스를 선언
+- ConcreteCommand(PasteCommand, OpenCommand) : 
+  - Receiver 객체와 액션 간의 액션 간의 연결성을 정의함
+  - 또한 처리 객체에 정의된 연산을 호출하도록 Execute를 구현
+- Client(Application) : ConcreteCommand 객체를 생성하고 처리 객체로 정의
+- Invoker(MenuItem) : 명령어에 처리를 수행할 것을 요청
+- Receiver(Document, Application)
+  - 요청에 관련된 연산 수행 방법을 알고 있음
+  - 어떤 클래스도 요청 수신자로서 동작할 수 있음
+
+## 협력 방법
+- 사용자는 ConcreteCommand 객체를 생성하고 이를 수신자로 지정함
+- Invoker 클래스는 ConcreteCommand 객체를 저장함
+- Invoker 클래스는 command 정의된 Execute()를 호출하여 요청을 발생시킴. 명령어가 취소 가능한 것이라면 ConcreteCommand는 이전 Execute() 호출 전 상태를 취소 처리를 위해 저장
+- ConcreteCommand 객체는 요청을 실제 처리할 객체의 정의된 연산을 호출 함
+
+- 다이어그램
+  - ![command3](https://user-images.githubusercontent.com/7076334/138012275-ddba6762-fb4f-4d0c-a356-93ca4deb4913.png)
+  - Command 객체로 요청 발생자(invkoer)가 요청 수신자에서 분리
+
+## 결과
+- 명령 패턴을 사용하여 생기는 결과
+  - 1) Command는 연산을 호출하는 객체(invoker)와 연산 수행 방법을 구현하는 객체(receievr)를 분리함
+  - 2) Command는 일급 클래스. 다른 객체와 같은 방식으로 조작되고 확장할 수 있음
+  - 3) 명령을 여러 개를 복합해서 복합 명령을 만들 수 있음. 앞에서 MacroCommand 클래스의 예 (복합체 패턴도 가능)
+  - 4) 새로운 Command 객체를 추가하기 쉬움. 기존 클래스를 변경할 필요 없이 단지 새로운 명령어에 대응하는 클래스만 정의하면 됨
+
+## 구현
+- 명령 패턴을 정의하는 데 필요한 내용
+  - 1) 명령이 얼마나 지능적이어야 할까?
+    - 명령어는 다양한 기능을 갖는데, 가장 대표적인 것이 처리 요청을 수행하는 액션과 이를 받는 객체 사이의 연결 관계를 정의하는 것
+    - 수신 객체에 대한 요청 전달 없이도 자신이 모든 것을 처리할 수도 있음
+      - 적당한 수신 객체가 없을 때, 기존 클래스들과 독립성을 보장하는 명령어를 정의하고자 할 때 매우 유용
+  - 2) 취소(undo) 및 반복(redo) 연산 지원하기
+    - ConcreteCommand 클래스는 이러한 취소와 반복을 처리하기 위해 추가적 상태 정보를 관리
+      - 실제 요청을 처리할 책임을 지는 수신 객체
+      - 수신 객체가 수행할 연산에 필요한 매개변수 정보
+      - 요청이 처리되어 변하기 전의 원래 값. 수신 객체는 명령어가 이전의 상태로 되돌아갈 수 있도록 하는 연산을 정의해야 함
+    - 여러 단계의 실행과 취소를 가능하게 하려면 수행한 명령어들의 '이력 목록'을 남겨야 하고, 최대한 지원할 수 있는 단계를 정의해 두어야 함
+      - 이 이력 목록은 명령어의 순서를 정의하고, 이 목록을 반대로 읽으면 수행한 결과를 취소하는 효과가 있음 
+  - 3) 취소를 진행하는 도중 오류가 누적되는 것 피하기
+    - 처리 내역 이력 관리 시, 문제가 될 수 있는 부분은 신뢰성을 보장하면서 처리된 의미들을 유지한채 수행/취소 처리가 되어야 함
+    - 객체가 처리 결과를 취소했을 때 원래의 상태로 복귀했는지 확인하는 작업이 필요
+  - 4) C++ 템플릿 사용하기
+    - C++의 템플릿을 쓰면 모든 명령에서 Command를 상속받는 서브클래스를 만드는 상황을 피할 수 있음
+
+## 예제 코드
+```
+/**
+ * Command
+ */
+public interface Command {
+    void execute();
+}
+
+
+/**
+ * ConcreteCommand
+ */
+public class OpenCommand implements Command {
+    private Application application;
+
+    public OpenCommand(Application application) {
+        this.application = application;
+    }
+
+    @Override
+    public void execute() {
+        String name = askUser();
+        if (name != null) {
+            Document document = new Document(name);
+            application.add(document);
+            document.open();
+        }
+    }
+
+    protected String askUser() {
+        System.out.println("Asking user for document name");
+        return "someDocName";
+    }
+}
+
+/**
+ * ConcreteCommand
+ */
+public class PasteCommand implements Command {
+    private Document document;
+
+    public PasteCommand(Document document) {
+        this.document = document;
+    }
+
+    @Override
+    public void execute() {
+        document.paste();
+    }
+}
+
+/**
+ * ConcreteCommand
+ */
+public class MacroCommand implements Command {
+    private List<Command> commands;
+
+    public MacroCommand() {
+        commands = new ArrayList<>();
+    }
+
+    public void add(Command command) {
+        commands.add(command);
+    }
+
+    public void remove(Command command) {
+        commands.remove(command);
+    }
+
+    @Override
+    public void execute() {
+        for (Command command : commands) {
+            command.execute();
+        }
+    }
+}
+
+/**
+ * Receiver
+ */
+public class Document {
+    private String name;
+
+    public Document(String name) {
+        System.out.println("Creating document " + name);
+        this.name = name;
+    }
+
+    public void open() {
+        System.out.println("Opening document " + name);
+    }
+
+    public void close() {
+        System.out.println("Closing document " + name);
+    }
+
+    public void copy() {
+        System.out.println("Copying text from document " + name);
+    }
+
+    public void paste() {
+        System.out.println("Pasting text into document " + name);
+    }
+
+    public void cut() {
+        System.out.println("Cutting text from document " + name);
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+/**
+ * Client
+ */
+public class Application {
+    private List<Document> documents = new ArrayList<>();
+    private MenuItem openDocumentMenuItem;
+    private MenuItem pasteMenuItem;
+
+    public Application() {
+        createMenus();
+    }
+
+    protected void createMenus() {
+        /*
+         * Creating File Menu
+         */
+        openDocumentMenuItem = new MenuItem();
+        openDocumentMenuItem.storeCommand(new OpenCommand(this));
+
+        /*
+         * Creating Edit Menu
+         */
+        pasteMenuItem = new MenuItem();
+    }
+
+    public void add(Document document) {
+        documents.add(document);
+    }
+
+    public static void main(String[] args) {
+        Application application = new Application();
+
+        application.openDocumentMenuItem.invokeCommand();
+        application.pasteMenuItem.invokeCommand();
+    }
+}
+
+```
+- OpenCommand : 선택한 이름의 문서를 여는 처리를 추상화한 객체
+  - Application 객체를 매개변수로 전달 (add 기능을 사용하기 위해)
+  - AskUser() 연산을 이용해서 열어야 하는 문서의 이름을 전달받음
+- PasteCommand : Document 객체를 처리 객체로 전달받아야 함
+- MacroCommand : 여러 가지 처리를 일련의 순서대로 수행해야 할 경우
+  - 명시적 처리 객체(receiver)도 정의되어 있지 않음
+  - 각 명령어들만이(command) 실제 처리 객체에 대한 정보를 가지고 있으면 됨
+- Document(receiver) : 실제 요청에 대한 연산 수행
+- MenuItem(invoker) : 명령어에 처리를 수행할 것을 요청
+- Applicatin(Client) : ConcreteCommand 객체를 생성하고 처리 객체로 정의
+
+## 잘 알려진 사용예
+
+
+## 관련 패턴
+- MacroCommand를 구현하는데 복합체 패턴 사용 가능
+- 취소를 처리 할 때 객체의 상태를 관리하는 데에는 메멘토 패턴 사용 가능
+- 명령어가 처리되어 처리된 이력 목록에 저장되기 전에 명령어를 복사해야 한다면 원형 패턴 사용 가능

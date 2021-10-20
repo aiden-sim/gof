@@ -552,6 +552,7 @@ public class Application {
 - Applicatin(Client) : ConcreteCommand 객체를 생성하고 처리 객체로 정의
 
 ## 잘 알려진 사용예
+- java thread, runnable
 
 
 ## 관련 패턴

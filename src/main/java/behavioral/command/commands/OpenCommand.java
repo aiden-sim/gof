@@ -1,9 +1,11 @@
 package behavioral.command.commands;
 
 import behavioral.command.Application;
-import behavioral.command.Command;
 import behavioral.command.Document;
 
+/**
+ * ConcreteCommand
+ */
 public class OpenCommand implements Command {
     private Application application;
 

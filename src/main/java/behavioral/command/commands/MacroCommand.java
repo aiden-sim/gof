@@ -1,10 +1,11 @@
 package behavioral.command.commands;
 
-import behavioral.command.Command;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ConcreteCommand
+ */
 public class MacroCommand implements Command {
     private List<Command> commands;
 

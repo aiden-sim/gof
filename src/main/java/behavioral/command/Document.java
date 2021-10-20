@@ -1,5 +1,8 @@
 package behavioral.command;
 
+/**
+ * Receiver
+ */
 public class Document {
     private String name;
 

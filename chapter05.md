@@ -389,13 +389,172 @@ public class Client {
     - C++의 템플릿을 쓰면 모든 명령에서 Command를 상속받는 서브클래스를 만드는 상황을 피할 수 있음
 
 ## 예제 코드
+```
+/**
+ * Command
+ */
+public interface Command {
+    void execute();
+}
 
+
+/**
+ * ConcreteCommand
+ */
+public class OpenCommand implements Command {
+    private Application application;
+
+    public OpenCommand(Application application) {
+        this.application = application;
+    }
+
+    @Override
+    public void execute() {
+        String name = askUser();
+        if (name != null) {
+            Document document = new Document(name);
+            application.add(document);
+            document.open();
+        }
+    }
+
+    protected String askUser() {
+        System.out.println("Asking user for document name");
+        return "someDocName";
+    }
+}
+
+/**
+ * ConcreteCommand
+ */
+public class PasteCommand implements Command {
+    private Document document;
+
+    public PasteCommand(Document document) {
+        this.document = document;
+    }
+
+    @Override
+    public void execute() {
+        document.paste();
+    }
+}
+
+/**
+ * ConcreteCommand
+ */
+public class MacroCommand implements Command {
+    private List<Command> commands;
+
+    public MacroCommand() {
+        commands = new ArrayList<>();
+    }
+
+    public void add(Command command) {
+        commands.add(command);
+    }
+
+    public void remove(Command command) {
+        commands.remove(command);
+    }
+
+    @Override
+    public void execute() {
+        for (Command command : commands) {
+            command.execute();
+        }
+    }
+}
+
+/**
+ * Receiver
+ */
+public class Document {
+    private String name;
+
+    public Document(String name) {
+        System.out.println("Creating document " + name);
+        this.name = name;
+    }
+
+    public void open() {
+        System.out.println("Opening document " + name);
+    }
+
+    public void close() {
+        System.out.println("Closing document " + name);
+    }
+
+    public void copy() {
+        System.out.println("Copying text from document " + name);
+    }
+
+    public void paste() {
+        System.out.println("Pasting text into document " + name);
+    }
+
+    public void cut() {
+        System.out.println("Cutting text from document " + name);
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+/**
+ * Client
+ */
+public class Application {
+    private List<Document> documents = new ArrayList<>();
+    private MenuItem openDocumentMenuItem;
+    private MenuItem pasteMenuItem;
+
+    public Application() {
+        createMenus();
+    }
+
+    protected void createMenus() {
+        /*
+         * Creating File Menu
+         */
+        openDocumentMenuItem = new MenuItem();
+        openDocumentMenuItem.storeCommand(new OpenCommand(this));
+
+        /*
+         * Creating Edit Menu
+         */
+        pasteMenuItem = new MenuItem();
+    }
+
+    public void add(Document document) {
+        documents.add(document);
+    }
+
+    public static void main(String[] args) {
+        Application application = new Application();
+
+        application.openDocumentMenuItem.invokeCommand();
+        application.pasteMenuItem.invokeCommand();
+    }
+}
+
+```
+- OpenCommand : 선택한 이름의 문서를 여는 처리를 추상화한 객체
+  - Application 객체를 매개변수로 전달 (add 기능을 사용하기 위해)
+  - AskUser() 연산을 이용해서 열어야 하는 문서의 이름을 전달받음
+- PasteCommand : Document 객체를 처리 객체로 전달받아야 함
+- MacroCommand : 여러 가지 처리를 일련의 순서대로 수행해야 할 경우
+  - 명시적 처리 객체(receiver)도 정의되어 있지 않음
+  - 각 명령어들만이(command) 실제 처리 객체에 대한 정보를 가지고 있으면 됨
+- Document(receiver) : 실제 요청에 대한 연산 수행
+- MenuItem(invoker) : 명령어에 처리를 수행할 것을 요청
+- Applicatin(Client) : ConcreteCommand 객체를 생성하고 처리 객체로 정의
 
 ## 잘 알려진 사용예
+
 
 ## 관련 패턴
 - MacroCommand를 구현하는데 복합체 패턴 사용 가능
 - 취소를 처리 할 때 객체의 상태를 관리하는 데에는 메멘토 패턴 사용 가능
 - 명령어가 처리되어 처리된 이력 목록에 저장되기 전에 명령어를 복사해야 한다면 원형 패턴 사용 가능
-
-

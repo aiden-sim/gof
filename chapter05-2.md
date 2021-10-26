@@ -126,16 +126,144 @@ public interface BooleanExp {
     BooleanExp copy();
 }
 
+/**
+ * Context
+ */
+public class Context {
+    private Map<String, Boolean> values = new HashMap<String, Boolean>();
+
+    public Boolean lookup(String variable) {
+        return values.get(variable);
+    }
+
+    public void assign(VariableExp variable, boolean value) {
+        System.out.println("Przypisanie " + variable.getName() + " = " + value);
+        values.put(variable.getName(), value);
+    }
+}
+
+/**
+ * TerminalExpression
+ */
+public class VariableExp implements BooleanExp {
+    private String name;
+
+    public VariableExp(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean evaluate(Context context) {
+        return context.lookup(name);
+    }
+
+    @Override
+    public BooleanExp replace(String variable, BooleanExp expression) {
+        if (variable != null && variable.equals(name)) {
+            return expression.copy();
+        } else {
+            return this.copy();
+        }
+    }
+
+    @Override
+    public BooleanExp copy() {
+        return new VariableExp(name);
+    }
+}
+
+/**
+ * NonterminalExpression
+ */
+public class AndExp implements BooleanExp {
+    private BooleanExp operand1;
+    private BooleanExp operand2;
+
+    public AndExp(BooleanExp operand1, BooleanExp operand2) {
+        this.operand1 = operand1;
+        this.operand2 = operand2;
+    }
+
+    @Override
+    public boolean evaluate(Context context) {
+        return operand1.evaluate(context) && operand2.evaluate(context);
+    }
+
+    @Override
+    public BooleanExp replace(String variable, BooleanExp expression) {
+        return new AndExp(operand1.replace(variable, expression),
+                          operand2.replace(variable, expression));
+    }
+
+    @Override
+    public BooleanExp copy() {
+        return new AndExp(operand1.copy(), operand2.copy());
+    }
+}
+
+public class Client {
+    public static void main(String[] args) {
+        BooleanExp expression;
+        Context context = new Context();
+
+        VariableExp x = new VariableExp("X");
+        VariableExp y = new VariableExp("Y");
+
+        expression = new OrExp(new AndExp(new Constant(true), x), new AndExp(y, new NotExp(x)));
+
+        context.assign(x, false);
+        context.assign(y, true);
+
+        boolean result = expression.evaluate(context);
+        System.out.println("Wynik ((true and x) or (y and (not x))) = " + result);
+    }
+}
 ```
-- BooleanExp
-  -  
+- BooleanExp (AbstractExpression)
+  - 불 식을 정의하는 모든 클래스에 공통인 인터페이스를 정의
   - 참이나 거짓의 값을 확인할 수 있는 Evaluate() 연산 필요
   - 변수를 또 다른 식으로 대체하여 새로운 불 식을 생성할 수 있는 Replace() 필요
+  - 추상 구문 트리에 속한 모든 노드가 공통으로 가져야 할 Interpret() 연산을 추상 연산으로 정의
 
+- Context (Context)
+  - 변수를 불 값에 대응 시키는 것 (true / false)
+  - 번역기에 대한 포괄적인 정보를 포함 
+
+- VariableExp (TerminalExpression)
+  - 이름을 갖는 변수를 클래스로 정의
+    - evaluate : 현재 상황에서의 값을 알아낸 후 반환
+    - copy : 변수를 복사하는 것은 새로운 VariableExp 객체를 반환하는 것
+    - replace : 변수를 수식으로 대체하기 위해서는 변수가 인자로 전달받는 것과 같은 이름인지 확인
+  - 문장을 구성하는 모든 터미널 기호에 대해서 해당 클래스를 만들어야 함 
+
+- AndExp (NonterminalExpression)
+  - 두 불 식을 AND 연산 정의
+    - evaluate : 피연산자를 확인해서 'And'의 논리 연산을 수행한 결과를 반환
+    - copy, replace : 연산을 구현할 때 자신의 피연산자에 대한 재귀적 호출을 이용
+
+- Client
+  - 언어로 정의한 특정 문장을 나타내는 추상 구문 트리 ( NonterminalExpression, TerminalExpression 로 구성)
+  - Interpret() 연산 호출 (evaluate)
+
+- 해석자 패턴은 복합체 패턴에서처럼 단순히 연산을 여러 클래스 계통에 걸쳐 분산하는 것 이상의 의미를 가짐
+  - Evaluate() 연산을 해석자로 간주한 이유는 BooleanExp 클래스를 하나의 언어(true/false) 로 정의하였기 때문
 
 ## 잘 알려진 사용예
+- 객체지향 컴파일러 구현
+- java interpreter
+
+- 가장 일반적인 형태는 복합체 패턴이 사용된든 곳에 해석자 패턴을 사용할 수 있음
+  - 그러나 복합체 패턴으로 정의한 클래스들이 하나의 언어 구조를 정의할 때만 해석자 패턴이라고 함 
 
 ## 관련 패턴
+- 추상 구문 트리는 복합체 패턴의 한 인스턴스로 볼 수 있음
+- 하나의 구문 트리내에 터미널 기호를 여러 개 공유하기 위해서는 플라이급 패턴을 적용 가능
+- 해석자는 반복자 패턴(iterator)을 이용해서 자신의 구조를 순회
+- 방문자 패턴을 이용하면 하나의 클래스에 정의된 구문 트리 각 노드에 대한 상태를 관리할 수 있음
 
 ## 참고
 - BNF : https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%BB%A4%EC%8A%A4-%EB%82%98%EC%9A%B0%EB%A5%B4_%ED%91%9C%EA%B8%B0%EB%B2%95

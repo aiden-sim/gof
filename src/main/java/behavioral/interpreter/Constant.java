@@ -1,7 +1,7 @@
 package behavioral.interpreter;
 
 /**
- * NonterminalExpression
+ * TerminalExpression
  */
 public class Constant implements BooleanExp {
     private boolean value;

@@ -270,3 +270,236 @@ public class Client {
 - BNF : https://ko.wikipedia.org/wiki/%EB%B0%B0%EC%BB%A4%EC%8A%A4-%EB%82%98%EC%9A%B0%EB%A5%B4_%ED%91%9C%EA%B8%B0%EB%B2%95
 
 
+# 반복자(ITERATOR)
+## 의도
+- 내부 표현부를 노출하지 않고 어떤 집합 객체에 속한 원소들을 순차적으로 접근할 수 있는 방법을 제공
+
+## 다른 이름
+- 커서(Cursor)
+
+## 동기
+- 이런 문제를 해결하는 데 사용하는 것이 반복자 패턴
+  - 순회 방법이 바뀌었따고 List 클래스의 인터페이스를 부풀리고 싶지는 않을 것
+  - 동일한 리스트에 대해서 하나 이상의 순회 방법을 정의하고 싶을 때
+
+- 반복자 패턴의 주요 골자는 리스트 객체에 접근해서 새로운 내용을 삽입, 삭제하거나 순회하는 내용을 반복자 객체에 정의하는 것
+  - 반복자 객체를 나타내는 Iterator 클래스는 리스트의 원소들에 접근하는 데 필요한 인터페이스를 제공
+  - 즉 Iterator 객체는 현재 원소가 무엇인지 관리하고, 이미 방문한 원소들이 무엇인지 알고 있음 
+
+- ![iterator](https://user-images.githubusercontent.com/7076334/138907141-93a530a9-5036-4f3c-aa2c-d0ca7b2267a8.png)
+  - List 클래스는 ListIterator 클래스에 대해 그림과 같은 관련성을 유지
+  - ListIterator 클래스의 인터페이스를 생성하기 전에 먼저 순회 주체가 되는 List 객체를 생성해야 됨
+  - ListIterator 클래스의 인스턴스를 생성하고 나면 이를 이용해서 리스트 원소에 접근할 수 있게 됨
+    - CurrentItem() 연산은 리스트의 현재 원소를 알아 내는 연산
+    - First() 연산은 현재 원소를 리스트 첫 번째 원소로 초기화하는 연산
+    - Next() 다음 원소를 순회 과정 중의 현재 원소로 지정함
+    - IsDone()은 순회할 원소가 더 있는지 없는지 확인하는 연산
+
+- 순회 메커니즘을 클래스 List에서 분리시키면, List 클래스의 인터페이스를 변경하지 않으면서 다양한 순회 알고리즘을 구현할 수 있음
+
+- Iterator 클래스와 List 클래스가 한 쌍으로 묶여있기 때문에, 사용자는 어떤 집합 구조에 대해서 순회할 주체가 리스트인지 알아야 됨
+  - 따라서 사용자는 반드시 특정한 집합 구조에 따라 가야함
+  - List의 복합 구조를 변경하더라도 사용자 코드는 변경하지 않도록 만들면 더욱 좋음
+  - 이렇게 하려면 반복자의 개념을 일반화하여 '다형성을 지닌 반복'이 가능하도록 하면 됨
+
+- ![iterator2](https://user-images.githubusercontent.com/7076334/138909526-f2b8ab7c-26e2-46d1-afd2-6f62437c4f9f.png)
+  - 다양한 리스트를 조작하는데 필요한 공통의 인터페이스를 AbstractList 클래스에 정의
+  - 리스트를 계속 반복해서 접근하는 데 필요한 공통 인터페이스를 정의하는 Iterator 추상 클래스가 필요
+    - 서로 다른 리스트의 구현 방식마다 구체적인 반복 기법을 제공하는 Iterator 클래스의 서브클래스를 제공하면 됨
+    - ex) List <-> ListIterator, SkipList <-> SkipListIterator
+  - 이렇게 하면 반복 메커니즘의 원소들이 어떤 집합 구조로 되어 있는가로부터 독립될 수 있음 (사용자는 추상 클래스만 접근)
+  - CreateIterator()와 같은 연산을 이용해서 Iterator를 얻을 수 있도록 함
+    - 팩토리 메서드 패턴 사용 가능  
+
+## 활용성
+- 반복자 패턴의 목적
+  - 객체 내부 표현 방식을 모르고도 집합 객체의 각 원소들에 접근하고 싶을 때
+  - 집합 객체를 순회하는 다양한 방법을 지원하고 싶을 때
+  - 서로 다른 집합 객체 구조에 대해서도 동일한 방법으로 순회하고 싶을 때 
+
+## 구조
+- ![iterator3](https://user-images.githubusercontent.com/7076334/138911835-8fdc1921-1603-4176-b0ab-c3e29b89806b.png)
+
+## 참여자
+- Iterator : 원소를 접근하고 순회하는 데 필요한 인터페이스를 제공
+- ConcreteIterator : Iterator에 정의된 인터페이스를 구현하는 클래스로, 순회 과정 중 집합 객체 내에서 현재 위치를 기억
+- Aggregate : Iterator 객체를 생성하는 인터페이스를 정의
+- ConcreteAggregate : 해당하는 ConcreteIterator의 인스턴스를 반환하는 Iterator 생성 인터페이스를 구현
+
+## 협력 방법
+- ConcreteIterator는 집합 객체 내 현재 객체를 계속 추적하고 다음번 방문할 객체를 결정
+
+## 결과
+- Iterator 패턴의 주요 특징
+  - 1) 집합 객체의 다양한 순회 방법을 제공
+    - 구조가 복잡한 집합 객체는 다양한 방법으로 순회할 수 있음
+    - 새로운 순회 방법을 Iterator 서브클래스로 정의하여 기존 순회 방법을 다른 순회 알고리즘 인스턴스로 교체 가능
+  - 2) Iterator는 Aggregate 클래스의 인터페이스를 단순화함
+    - Iterator 순회 인터페이스는 Aggregate 클래스에 정의한 자신과 비슷한 인터페이스들을 없애서 Aggregate 인터페이스를 단순화할 수 있음
+  - 3) 집합 객체에 따라 하나 이상의 순회 방법이 제공될 수 있음 
+    - 각 Iterator마다 자신의 순회 상태가 있으므로 하나의 집합 객체를 한번에 여러 번 순회시킬 수 있음
+
+## 구현
+- 반복자 패턴은 다양한 구현이 가능
+- 프로그래밍 언어가 제공하는 제어 구조에 따라 달라질 수 있음
+  - 1) 누가 반복을 제어하게 할까?
+    - 사용자가 반복을 제어할 때, 외부 반복자라고 함
+      - 외부 반복자를 사용하는 사용자 프로그램은 순회를 계속하고 다음번 원소를 명시적으로 반복자에게 요청해야 함 
+    - 반복자 자신이 제어를 담당하면 내부 반복자라고 함
+      - 처리할 연산을 내부 반복자에게 넘겨주고, 해당 반복자는 그 연산을 모든 원소에 적용
+    - 외부 반복자가 내부 반복자보다 유연한 방법
+      - 외부 반복자를 이용하면 두 집합 객체가 동일한 집합인지 비교가능
+      - 내부 반복자는 불가능함 (하지만 순회 처리 방법을 정의하기 때문에 사용하기 쉬움) 
+  - 2) 순회 알고리즘을 어디에서 정의할 것인까?
+    - Aggregate 클래스에도 순회 알고리즘을 정의하고, Iterator에는 순회 상태만 저장할 수도 있음 (커서)
+    - Iterator는 단순히 집합 구조 내 현재 위치만 가리킴
+  - 3) 어떻게 반복자를 견고하게 만들 수 있을까?
+    - 집합 객체를 순회하는 동안 집합 객체를 수정하는 것을 막기 위해 집합 객체를 복사해 두었다가 그 복사본을 순회하는 것
+      - 하지만 추가 비용이 많이 듬 (원형 패턴) 
+  - 4) 추가적으로 필요한 반복자 연산
+    - Iterator 클래스에 필요한 최소한 연산. (First(), Next(), IsDone(), CurrentItem())
+    - 순서가 정해진 집합 객체라면 Previous() 를 사용해서 반복자 위치를 앞으로 이동
+    - 인덱스를 갖는 집합 객체는 SkipTo() 연산을 통해 조건에 일치하는 객체로 반복자를 바로 이동
+  - 5) C++에서 다형성을 지닌 반복자를 이용하는 방법
+    - 다형적인 반복자는 런타임에 팩토리 메서드로 동적으로 반복자 객체를 제공해야 하기 때문에 추가 비용 지불
+      - 필요할 때만 사용하는 것이 좋음
+    - 다형적인 반복자의 단점 중 하나는 사용자가 직접 반복자를 삭제하는 책임을 져야 한다는 것
+      - 오류 발생할 수도 있음   
+  - 6) 반복자에는 특수한 접근 권한이 있음
+    - 반복자는 반복자를 생성한 집합 객체의 확장으로 바라 볼 수 있음
+      - 반복자와 집합 객체 간의 결합도가 매우 커짐
+    - C++ 사용하면 프렌드(friend) 정의해서 반복자는 마음대로 집합 객체에 정의된 속성 접근 가능
+      - 하지만 새로운 순회 방법을 정의하기 어려움
+      - 프렌드 하나 더 추가 시, 객체의 인터페이스 변경이 요구되기 때문에
+      - 집합 객체에 정의된 멤버 변수 중에 중요하기는 하지만 공개할 수 없는 멤버 변수에 접근하는 연산을 Iterator 안에 protected로 정의
+        - Iterator를 상속하는 서브클래스들은 이 연산을 통해 집합 객체에 접근 
+  - 7) 복합체를 위한 반복자
+    - 외부 반복자는 재귀적 합성 구조를 처리하도록 구현하기 어려움
+      - 이때는 복합체 패턴을 이용해서 자신이 거쳐 온 단계에 대한 정보를 저장해 두어야 함 (내부 반복자는 자기 스스로가 재귀적 호출로 현재 위치를 저장)
+  - 8) 널 반복자
+    - NullIterator는 반복자이기는 하지만 기능이 미약한 것으로, 영역 판단을 하는데 유용함
+    - 널 반복자는 항상 순회 시에 끝나는 반복자로 정의됨 (done)
+      - NullIterator는 IsDone() 연산에서 항상 참을 리턴 
+
+## 예제코드
+- ![iterator4](https://user-images.githubusercontent.com/7076334/138921044-307f6561-0ab9-4a52-9697-165dcdc98f82.png)
+
+```
+/**
+ * Aggregate(집합체)
+ * Iterator 역할을 만들어내는 인터페이스를 결정
+ */
+public interface Aggregate {
+    Iterator iterator();
+}
+
+/**
+ * Aggregate(집합체)
+ * Iterator 역할을 만들어내는 인터페이스를 결정
+ */
+public interface Aggregate {
+    Iterator iterator();
+}
+
+public class Book {
+    private String name;
+
+    public Book(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+/**
+ * ConcreteAggregate(구체적인 집합체)
+ * Aggregate 역할이 결정한 인터페이스를 실제로 구현하는 일
+ */
+public class BookShelf implements Aggregate {
+    private Book[] books;
+    private int last = 0;
+
+    public BookShelf(int maxsize) {
+        this.books = new Book[maxsize];
+    }
+
+    public Book getBookAt(int index) {
+        return books[index];
+    }
+
+    public void appendBook(Book book) {
+        this.books[last] = book;
+        last++;
+    }
+
+    public int getLength() {
+        return last;
+    }
+
+    public Iterator iterator() {
+        return new BookShelfIfIterator(this);
+    }
+}
+
+/**
+ * ConcreteIterator(구체적인 반복자)
+ * Iterator가 결정한 인터페이스를 실제로 구현
+ */
+public class BookShelfIfIterator implements Iterator {
+    private BookShelf bookShelf;
+    private int index;
+
+    public BookShelfIfIterator(BookShelf bookShelf) {
+        this.bookShelf = bookShelf;
+        this.index = 0;
+    }
+
+    public boolean hasNext() {
+        if (index < bookShelf.getLength()) {
+            return true;
+        }
+        return false;
+    }
+
+    public Object next() {
+        Book book = bookShelf.getBookAt(index);
+        index++;
+        return book;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BookShelf bookShelf = new BookShelf(4);
+        bookShelf.appendBook(new Book("Around the World in 80 Days"));
+        bookShelf.appendBook(new Book("Bible"));
+        bookShelf.appendBook(new Book("Cinderella"));
+        bookShelf.appendBook(new Book("Daddy-Long-Legs"));
+
+        /**
+         * Array에서 Vector로 변경한다고 해도 변경없이 정상적으로 동작한다.
+         */
+        Iterator it = bookShelf.iterator();
+        while (it.hasNext()) {
+            Book book = (Book) it.next();
+            System.out.println(book.getName());
+        }
+    }
+}
+
+```
+
+
+## 잘 알려진 사용예
+- 대부분 클래스 라이브러리에 정의된 컬렉션 클래스는 한 가지 이상의 방법으로 반복자를 제공
+
+## 관련 패턴
+- 반복자 패턴은 복합체 패턴과 같이 재귀적 구조가 있을 때 자주 사용
+- 다양한 반복자를 사용해서 적당한 Iterator 서브 클래스를 얻으려면 팩토리 메서드 패턴 사용
+- 메멘토 패턴도 반복자 패턴과 함께 자주 사용, 이때 반복자 자신이 반복한 결과를 저장하기 위해 메멘토를 사용
+
+## 참고
+- http://www.incodom.kr/%EC%9D%B4%ED%84%B0%EB%A0%88%EC%9D%B4%ED%84%B0_%ED%8C%A8%ED%84%B4
+

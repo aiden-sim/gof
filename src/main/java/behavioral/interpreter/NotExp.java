@@ -1,5 +1,8 @@
 package behavioral.interpreter;
 
+/**
+ * NonterminalExpression
+ */
 public class NotExp implements BooleanExp {
     private BooleanExp operand;
 

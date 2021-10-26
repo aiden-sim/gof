@@ -1,5 +1,8 @@
 package behavioral.interpreter;
 
+/**
+ * TerminalExpression
+ */
 public class VariableExp implements BooleanExp {
     private String name;
 

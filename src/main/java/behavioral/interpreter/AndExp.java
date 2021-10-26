@@ -1,5 +1,8 @@
 package behavioral.interpreter;
 
+/**
+ * NonterminalExpression
+ */
 public class AndExp implements BooleanExp {
     private BooleanExp operand1;
     private BooleanExp operand2;

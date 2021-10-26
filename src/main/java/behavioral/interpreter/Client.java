@@ -8,6 +8,7 @@ public class Client {
         VariableExp x = new VariableExp("X");
         VariableExp y = new VariableExp("Y");
 
+        // (true and x) or (y and (not x))
         expression = new OrExp(new AndExp(new Constant(true), x), new AndExp(y, new NotExp(x)));
 
         context.assign(x, false);

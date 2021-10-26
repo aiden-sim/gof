@@ -15,8 +15,8 @@ public class Client {
         context.assign(y, true);
 
         boolean result = expression.evaluate(context);
-        System.out.println("Wynik ((true and x) or (y and (not x))) = " + result);
-
+        System.out.println("((true and x) or (y and (not x))) = " + result);
+/*
         VariableExp z = new VariableExp("Z");
         NotExp notZ = new NotExp(z);
 
@@ -24,6 +24,6 @@ public class Client {
 
         context.assign(z, true);
         result = replacement.evaluate(context);
-        System.out.println("Wynik ((true and x) or ((not z) and (not x))) = " + result);
+        System.out.println("Wynik ((true and x) or ((not z) and (not x))) = " + result);*/
     }
 }

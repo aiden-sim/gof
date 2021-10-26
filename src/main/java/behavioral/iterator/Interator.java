@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 interface Iterator<T> {
     void first();

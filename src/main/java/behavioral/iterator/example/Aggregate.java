@@ -1,4 +1,4 @@
-package behavioral.interator.example;
+package behavioral.iterator.example;
 
 /**
  * Aggregate(집합체)

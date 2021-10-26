@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 public class Client {
     public static void printEmployees(Iterator<Employee> iterator) {

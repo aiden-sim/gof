@@ -1,4 +1,4 @@
-package behavioral.interator.example;
+package behavioral.iterator.example;
 
 /**
  * Iterator(반복자)

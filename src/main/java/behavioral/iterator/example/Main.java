@@ -1,4 +1,4 @@
-package behavioral.interator.example;
+package behavioral.iterator.example;
 
 public class Main {
     public static void main(String[] args) {

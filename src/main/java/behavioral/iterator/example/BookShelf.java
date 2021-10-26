@@ -1,4 +1,4 @@
-package behavioral.interator.example;
+package behavioral.iterator.example;
 
 /**
  * ConcreteAggregate(구체적인 집합체)

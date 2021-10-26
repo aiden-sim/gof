@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 public class Employee {
     private String name;

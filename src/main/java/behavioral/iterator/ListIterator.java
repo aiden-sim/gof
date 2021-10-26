@@ -1,32 +1,31 @@
-package behavioral.interator;
+package behavioral.iterator;
 
-public class ReverseListIterator<T> implements Iterator<T> {
+public class ListIterator<T> implements Iterator<T> {
     private List<T> list;
-    private long index = -1;
+    private long index = 0;
 
-    public ReverseListIterator(List<T> list) {
+    public ListIterator(List<T> list) {
         this.list = list;
-        first();
     }
 
     @Override
     public void first() {
-        index = list.count() - 1;
+        index = 0;
     }
 
     @Override
     public void next() {
-        index--;
+        index++;
     }
 
     @Override
     public boolean isDone() {
-        return index < 0;
+        return index >= list.count();
     }
 
     @Override
     public T currentItem() {
-        if (index >= 0) {
+        if (index < list.count()) {
             return list.get(index);
         }
         throw new IndexOutOfBoundsException();

@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 public abstract class Traverser<T> {
     private Iterator<T> iterator;

@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 public class ArrayList<T> implements List<T> {
     private java.util.List<T> internal = new java.util.ArrayList<T>();

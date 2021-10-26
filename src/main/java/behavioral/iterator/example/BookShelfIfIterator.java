@@ -1,4 +1,4 @@
-package behavioral.interator.example;
+package behavioral.iterator.example;
 
 /**
  * ConcreteIterator(구체적인 반복자)

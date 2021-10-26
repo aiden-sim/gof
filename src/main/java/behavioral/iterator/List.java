@@ -1,4 +1,4 @@
-package behavioral.interator;
+package behavioral.iterator;
 
 public interface List<T> extends Traversable<T> {
     long count();

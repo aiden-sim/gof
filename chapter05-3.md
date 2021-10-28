@@ -88,9 +88,165 @@
     - 또 다른 방법은 Mediator 클래스 내에 특화된 통지 인터페이스를 정의하여 동료 객체들이 직접 통신하게 하는 것
 
 ## 예제 코드
+```
+/**
+ * Mediator
+ */
+public abstract class DialogDirector {
+    public abstract void showDialog();
 
+    public abstract void widgetChanged(Widget widget);
 
+    protected abstract void createWidgets();
+}
+
+/**
+ * Colleague
+ */
+public abstract class Widget {
+    private DialogDirector director;
+
+    public Widget(DialogDirector director) {
+        this.director = director;
+    }
+
+    public void changed() {
+        if (director != null) {
+            director.widgetChanged(this);
+        }
+    }
+
+    public void handleMouse(MouseEvent event) {
+        System.out.println("Widget: handling mouse event");
+    }
+}
+
+/**
+ * ConcreteColleague
+ */
+public class ListBox extends Widget {
+    public ListBox(DialogDirector director) {
+        super(director);
+    }
+
+    public String getSelection() {
+        return null;
+    }
+
+    @Override
+    public void handleMouse(MouseEvent event) {
+        super.handleMouse(event);
+    }
+}
+
+/**
+ * ConcreteColleague
+ */
+public class EntryField extends Widget {
+    private String value;
+
+    public EntryField(DialogDirector director) {
+        super(director);
+    }
+
+    public String getText() {
+        return value;
+    }
+
+    public void setText(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public void handleMouse(MouseEvent event) {
+        super.handleMouse(event);
+    }
+}
+
+/**
+ * ConcreteColleague
+ */
+public class Button extends Widget {
+    private String text;
+
+    public Button(DialogDirector director) {
+        super(director);
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public void handleMouse(MouseEvent event) {
+        changed();
+    }
+}
+
+/**
+ * ConcreteMediator
+ */
+public class FontDialogDirector extends DialogDirector {
+    private Button ok;
+    private Button cancel;
+    private ListBox fontList;
+    private EntryField fontName;
+
+    @Override
+    protected void createWidgets() {
+        this.ok = new Button(this);
+        this.cancel = new Button(this);
+        this.fontList = new ListBox(this);
+        this.fontName = new EntryField(this);
+    }
+
+    @Override
+    public void showDialog() {
+        System.out.println("FontDialogDirector: showing dialog");
+    }
+
+    @Override
+    public void widgetChanged(Widget changedWidget) {
+        if (changedWidget == fontList) {
+            System.out.println("Setting fontName.text = fontList.getSelection()");
+            fontName.setText(fontList.getSelection());
+        } else if (changedWidget == ok) {
+            System.out.println("Modifying font");
+        } else if (changedWidget == cancel) {
+            System.out.println("Closing the dialog");
+        }
+    }
+
+    public static void pressOk(FontDialogDirector director) {
+        director.ok.handleMouse(new MouseEvent());
+    }
+}
+```
+- DialogDirector : 지시자에 대한 인터페이스 정의
+- Widget
+  - 위젯에 대한 추상 기본 클래스로 지시자가 누구인지 암
+  - changed 연산은 director 인스턴스 변수가 참조하는 객체의 widgetChanged 연산을 호출하여 변경 사실을 알림 
+  - DialogDirector 서브클래스는 widgetChanged() 연산을 재정의하여 적절하게 Widget 클래스가 변화되도록 함
+- ListBox, EntryField, Button
+  - Widget의 서브클래스로 구체적인 사용자 인터페이스 요소들
+- FontDialogDirector
+  - 대화상자에 정의한 위젯 간의 중재 역할을 수행
+  - FontDialogDirector 클래스는 자신이 화면에 표시한 위젯에 대한 정보를 계속 추적
+  - createWidgets() 연산을 재정의하여 위젯을 생성
+  - widgetChanged() 연산은 관련된 위젯들이 함께 적절히 동작할 수 있도록 함
+
+- 중재자 패턴이 복잡해지면 다른 응용분야에서 패턴의 장점은 희석됨
 
 ## 잘 알려진 사용예
+- 채팅 서버
 
 ## 관련 패턴
+- 퍼사드 패턴은 객체들로 구성된 서브시스템을 추상화하여 좀더 편한 인터페이스를 제공하려는 것으로 중재자 패턴과는 좀 다름
+- Facade 객체는 서브시스템을 구성하는 객체로만 메시지가 전달 (단방향)
+- 그러나 중재자 객체는 양방향
+- 상호 관련된 객체들은 감시자 패턴을 이용해서 중재자 객체들과 교류
+

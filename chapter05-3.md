@@ -421,3 +421,5 @@ public class ConstraintSolver {
 - 명령 패턴은 실행 취소가 가능한 연산의 상태를 저장할 때 메멘토 패턴을 사용할 수 있음
 - 메멘토 패턴은 반복자 패턴에서의 반복 과정 상태를 관리할 수 있음
 
+## 참고
+- https://beomseok95.tistory.com/283
